@@ -2,7 +2,7 @@
 
 ![Holidays Care](https://img.shields.io/badge/Travel-Agency-blue)
 ![MERN Stack](https://img.shields.io/badge/Stack-MERN-green)
-![Status](https://img.shields.io/badge/Status-Ready-success)
+<!-- ![Status](https://img.shields.io/badge/Status-Ready-success) -->
 
 **"We Take Care of Your Memories"**
 
