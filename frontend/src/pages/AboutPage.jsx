@@ -16,13 +16,6 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import StarIcon from '@mui/icons-material/Star';
 
 const AboutPage = () => {
-  const teamMembers = [
-    { name: 'Rajesh Kumar', role: 'Founder & CEO', avatar: 'R' },
-    { name: 'Priya Singh', role: 'Travel Expert', avatar: 'P' },
-    { name: 'Amit Patel', role: 'Tour Manager', avatar: 'A' },
-    { name: 'Sneha Sharma', role: 'Customer Relations', avatar: 'S' },
-  ];
-
   const differences = [
     {
       icon: <PriceCheckIcon sx={{ fontSize: 40, color: '#0891D1' }} />,
@@ -137,47 +130,7 @@ const AboutPage = () => {
         </Container>
       </Box>
 
-      {/* Team Section */}
-      <Container sx={{ py: 8 }}>
-        <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6 }}>
-          Meet Our Team
-        </Typography>
-        <Grid container spacing={4}>
-          {teamMembers.map((member, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Paper
-                elevation={2}
-                sx={{
-                  p: 3,
-                  textAlign: 'center',
-                  transition: 'transform 0.3s',
-                  '&:hover': { transform: 'scale(1.05)' },
-                }}
-              >
-                <Avatar
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    bgcolor: '#0891D1',
-                    fontSize: '2rem',
-                    margin: '0 auto 1rem',
-                  }}
-                >
-                  {member.avatar}
-                </Avatar>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {member.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {member.role}
-                </Typography>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
-      {/* Stats Section */}
+{/* Stats Section */}
       <Box sx={{ bgcolor: '#0891D1', color: 'white', py: 6 }}>
         <Container>
           <Grid container spacing={4} sx={{ textAlign: 'center' }}>

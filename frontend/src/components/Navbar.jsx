@@ -73,7 +73,13 @@ const Navbar = () => {
           component="img"
           src="/logo.png"
           alt="logo"
-          sx={{ height: 50 }}
+         sx={{
+  height: 50,
+  width: 'auto',
+  maxWidth: 160,
+  objectFit: 'contain',
+  display: 'block'
+}}
         />
 
         <IconButton onClick={handleDrawerToggle}>
@@ -133,22 +139,28 @@ const Navbar = () => {
           >
 
             {/* Logo only (premium look) */}
-            <Box
-              component={Link}
-              to="/"
-              sx={{ display: 'flex', alignItems: 'center' }}
-            >
-              <Box
-                component="img"
-                src="/logo.png"
-                alt="Holidays Care"
-                sx={{
-                  height: { xs: 50, md: 65 },
-                  width: 'auto',
-                  objectFit: 'contain',
-                }}
-              />
-            </Box>
+           <Box
+  component={Link}
+  to="/"
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    minWidth: { xs: 140, md: 180 }, // ⭐ ensures proper space
+  }}
+>
+  <Box
+    component="img"
+    src="/holidayscare.png"
+    alt="Holidays Care"
+    sx={{
+      height: { xs: 45, md: 60 },   // control height
+      width: 'auto',
+      maxWidth: { xs: 140, md: 180 }, // ⭐ prevents shrink
+      objectFit: 'contain',
+      display: 'block',
+    }}
+  />
+</Box>
 
 
             {/* Desktop Menu */}

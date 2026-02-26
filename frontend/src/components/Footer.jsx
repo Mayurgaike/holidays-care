@@ -97,7 +97,7 @@ const Footer = () => {
           }}
         >
           <Typography variant="body2">
-            © {new Date().getFullYear()} Holidays Care. All rights reserved.
+            © {new Date().getFullYear()} Holidays Care. All rights reserved. Developed by SoftnicsMedia
           </Typography>
         </Box>
       </Container>

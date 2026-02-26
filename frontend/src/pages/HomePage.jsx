@@ -1,681 +1,687 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Rating,
-  Avatar,
-  Paper,
-  Chip,
-  Skeleton,
-  CardActionArea,
-  Fade,
-  IconButton,
+  Box, Container, Typography, Button, Grid, Card, CardContent,
+  CardMedia, Avatar, Paper, IconButton, Rating,  TextField,Stack, Chip
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+
 import {
-  ArrowForwardIos,
-  ArrowBackIos,
-  KeyboardArrowRight,
-  KeyboardArrowLeft,
-  AttachMoney,
-  Place,
-  People,
-  Star,
-  Flight,
-  BeachAccess,
-  Favorite,
+  ArrowBackIosNew, ArrowForwardIos, KeyboardArrowRight,
+  Place, People, Flight, Star, Explore, Public
 } from '@mui/icons-material';
-import { toursAPI, heroAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { heroAPI } from '../services/api';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [heroImages, setHeroImages] = useState([]);
   const [currentHero, setCurrentHero] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [domesticScroll, setDomesticScroll] = useState(0);
-  const [internationalScroll, setInternationalScroll] = useState(0);
-  
-  const domesticRef = useRef(null);
-  const internationalRef = useRef(null);
+
+  // Pagination states for showing 3 tours at a time
+  const [domIndex, setDomIndex] = useState(0);
+  const [intIndex, setIntIndex] = useState(0);
 
   useEffect(() => {
-    fetchData();
+    fetchHero();
   }, []);
 
-  useEffect(() => {
-    if (heroImages.length > 1) {
-      const timer = setInterval(() => {
-        setCurrentHero((prev) => (prev + 1) % heroImages.length);
-      }, 6000);
-      return () => clearInterval(timer);
-    }
-  }, [heroImages]);
-
-  const fetchData = async () => {
+  const fetchHero = async () => {
     try {
-      setLoading(true);
-      const heroRes = await heroAPI.getAll();
-      setHeroImages(heroRes.data.length > 0 ? heroRes.data : [
-        { title: 'Discover Your Dream Destination', subtitle: 'We Take Care of Your Memories', imageUrl: '' }
+      const res = await heroAPI.getAll();
+      setHeroImages(res.data.length > 0 ? res.data : [
+        { title: "Explore The World", subtitle: "Find your perfect destination", imageUrl: "" }
       ]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
+    } catch {
+      setHeroImages([{ title: "Explore The World", subtitle: "Find your perfect destination", imageUrl: "" }]);
     }
   };
 
+  const popularTours = [
+    { name: 'Nepal', price: 45999, image: 'nepal.jpg', caption: 'The Roof of the World' },
+    { name: 'Vietnam', price: 65999, image: 'vietnam.jpg', caption: 'Land of the Ascending Dragon' },
+    { name: 'Dubai', price: 49999, image: 'dubai.jpg', caption: 'Where Luxury Meets the Desert' },
+  ];
+
   const domesticTours = [
-    { name: 'Kashmir', price: 24999, image: '/kashmir.jpg' },
-    { name: 'Leh Ladakh', price: 34999, image: '/ladakh.jpg' },
-    { name: 'Sikkim', price: 29999, image: '/sikkim.jpg' },
-    { name: 'Rajasthan', price: 19999, image: '/rajasthan.jpg' },
-    { name: 'Himachal', price: 29999, image: '/himachal.jpg' },
-    { name: 'Uttarakhand', price: 24999, image: '/uttarakhand.jpg' },
-    { name: 'Kerala', price: 14999, image: '/kerala.jpg' },
-    { name: 'Seven Sisters', price: 64999, image: '/northeast.jpg' },
-    { name: 'Varanasi', price: 24999, image: '/varanasi.jpg' },
+    { name: 'Kashmir', price: 24999, image: 'kashmir.jpg' },
+    { name: 'Kerala', price: 19999, image: 'kerala.jpg' },
+    { name: 'Leh Ladakh', price: 34999, image: 'ladakh.jpg' },
+    { name: 'Rajasthan', price: 17999, image: 'rajasthan.jpg' },
   ];
 
   const internationalTours = [
-    { name: 'Nepal', price: 45999, image: '/nepal.jpg' },
-    { name: 'Singapore', price: 59999, image: '/singapore.jpg' },
-    { name: 'Vietnam', price: 65999, image: '/vietnam.jpg' },
-    { name: 'Dubai', price: 49999, image: '/dubai.jpg' },
-    { name: 'Baku', price: 44999, image: '/baku.jpg' },
-    { name: 'Sri Lanka', price: 34999, image: '/srilanka.jpg' },
-    { name: 'Maldives', price: 85000, image: '/maldives.jpg' },
-    { name: 'Bali', price: 65999, image: '/bali.jpg' },
-    { name: 'Thailand', price: 45999, image: '/thailand.jpg' },
+    { name: 'Thailand', price: 45999, image: 'thailand.jpg' },
+    { name: 'Bali', price: 65999, image: 'bali.jpg' },
+    { name: 'Maldives', price: 85000, image: 'maldives.jpg' },
+    { name: 'Switzerland', price: 125000, image: 'northeast.jpg' },
+    { name: 'Singapore', price: 59999, image: 'singapore.jpg' },
+    {name: 'sri lanka', price: 34999, image: 'srilanka.jpg' },
+     { name: 'Nepal', price: 45999, image: 'nepal.jpg'},
+    { name: 'Vietnam', price: 65999, image: 'vietnam.jpg'},
+    { name: 'Dubai', price: 49999, image: 'dubai.jpg'},
   ];
+ const [isHovered, setIsHovered] = useState(false);
 
-  const popularDestinations = [
-    { name: 'Nepal', image: '/nepal.jpg', tours: 12 },
-    { name: 'Vietnam', image: '/vietnam.jpg', tours: 8 },
-    { name: 'Dubai', image: '/dubai.jpg', tours: 15 },
-    { name: 'Kashmir', image: '/kashmir.jpg', tours: 20 },
-  ];
+useEffect(() => {
 
-  const testimonials = [
-    {
-      name: 'Priya Sharma',
-      rating: 5,
-      comment: 'Amazing experience! The team was professional and everything was perfectly organized. Would definitely recommend!',
-      avatar: 'P',
-      location: 'Mumbai',
-      tour: 'Goa Beach Paradise'
-    },
-    {
-      name: 'Rahul Patel',
-      rating: 5,
-      comment: 'Best honeymoon package ever! They took care of every detail. The Kashmir tour was breathtaking.',
-      avatar: 'R',
-      location: 'Ahmedabad',
-      tour: 'Kashmir Valley Tour'
-    },
-    {
-      name: 'Anjali Gupta',
-      rating: 5,
-      comment: 'Excellent service from start to finish. Great prices and wonderful memories created!',
-      avatar: 'A',
-      location: 'Delhi',
-      tour: 'Rajasthan Heritage'
-    },
-  ];
+  if (isHovered) return;
 
-  const stats = [
-    { number: '10,000+', label: 'Happy Customers', icon: People },
-    { number: '500+', label: 'Successful Tours', icon: Flight },
-    { number: '8+', label: 'Years Experience', icon: Star },
-    { number: '100+', label: 'Exciting Destinations', icon: Place },
-  ];
+  const interval = setInterval(() => {
+    setDomIndex(prev =>
+      (prev + 1) % domesticTours.length
+    );
+  }, 4000);
 
-  const whyChooseUs = [
-    {
-      icon: Place,
-      title: 'Many Destinations',
-      description: 'We offer a wide range of domestic and international tour packages.',
-      color: '#FF6B6B'
-    },
-    {
-      icon: AttachMoney,
-      title: 'Best Value for Money',
-      description: 'Get the best prices with quality service and no hidden costs.',
-      color: '#4ECDC4'
-    },
-    {
-      icon: BeachAccess,
-      title: 'Beautiful Places',
-      description: 'We take you to the most beautiful and popular tourist destinations.',
-      color: '#45B7D1'
-    },
-    {
-      icon: Favorite,
-      title: 'Passion for Travel',
-      description: 'We love travel and work hard to give you the best holiday experience.',
-      color: '#F9CA24'
-    },
-  ];
+  return () => clearInterval(interval);
 
-  const handleNextHero = () => setCurrentHero((prev) => (prev + 1) % heroImages.length);
-  const handlePrevHero = () => setCurrentHero((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+}, [isHovered, domesticTours.length]);
 
-  // Carousel Functions
-  const scrollLeft = (ref, setScroll) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: -360, behavior: 'smooth' });
-      setScroll(prev => prev - 1);
+  // Helper function to get 3 items for display
+  const getVisibleTours = (list, startIndex) => {
+    const items = [];
+    for (let i = 0; i < 3; i++) {
+      items.push(list[(startIndex + i) % list.length]);
     }
-  };
-
-  const scrollRight = (ref, setScroll) => {
-    if (ref.current) {
-      ref.current.scrollBy({ left: 360, behavior: 'smooth' });
-      setScroll(prev => prev + 1);
-    }
+    return items;
   };
 
   return (
-    <Box>
-      {/* Hero Slider - Same as before */}
-      <Box sx={{ position: 'relative', height: { xs: '70vh', md: '90vh' }, overflow: 'hidden' }}>
-        <Fade in={true} timeout={1000}>
-          <Box
-            sx={{
-              height: '100%',
-              background: heroImages[currentHero]?.imageUrl
-                ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(http://localhost:5000${heroImages[currentHero].imageUrl})`
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              transition: 'all 1s ease-in-out',
-            }}
-          />
-        </Fade>
-        
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center', py: 4 }}>
-          <Typography 
-            variant="h1" 
-            sx={{ 
-              fontSize: { xs: '3rem', md: '5rem' }, 
-              fontWeight: 900, 
-              mb: 2,
-              lineHeight: 1.1,
-              textShadow: '3px 3px 6px rgba(0,0,0,0.5)'
-            }}
-          >
-            {heroImages[currentHero]?.title || 'Discover Your Dream Destination'}
-          </Typography>
-          <Typography 
-            variant="h4" 
-            sx={{ 
-              mb: 6, 
-              fontWeight: 300,
-              maxWidth: 800,
-              mx: 'auto',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-            }}
-          >
-            {heroImages[currentHero]?.subtitle || 'We Take Care of Your Memories'}
-          </Typography>
-          
-          <Paper
-            elevation={24}
-            sx={{
-              p: 0.5,
-              display: 'flex',
-              bgcolor: 'rgba(255,255,255,0.98)',
-              backdropFilter: 'blur(20px)',
-              borderRadius: 4,
-              maxWidth: 700,
-              mx: 'auto',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)'
-            }}
-          >
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              sx={{
-                flex: 1,
-                borderRadius: 3,
-                py: 1.5,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                bgcolor: '#0891D1',
-                '&:hover': { bgcolor: '#1565C0', transform: 'scale(1.02)' }
-              }}
-              onClick={() => navigate('/tours')}
-            >
+    <Box sx={{ overflowX: 'hidden' }}>
+      
+      {/* HERO SECTION */}
+      <Box
+        sx={{
+          height: "85vh",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${heroImages[currentHero]?.imageUrl ? `http://localhost:5000${heroImages[currentHero].imageUrl}` : 'hero.png'})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          transition: 'background-image 0.8s ease-in-out'
+        }}
+      >
+        <Container maxWidth="md">
+          <Paper elevation={0} sx={{ p: {xs: 3, md: 6}, textAlign: 'center', background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(5px)', borderRadius: 6, border: '1px solid rgba(255,255,255,0.3)' }}>
+            <Typography variant="h2" fontWeight={800} sx={{ fontSize: {xs: '2.5rem', md: '3.75rem'}, textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
+              {heroImages[currentHero]?.title}
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 4, opacity: 0.9, fontWeight: 300, letterSpacing: 1 }}>
+              {heroImages[currentHero]?.subtitle}
+            </Typography>
+            <Button variant="contained" size="large" onClick={() => navigate("/tours")} sx={{ px: 6, py: 1.8, borderRadius: '50px', fontSize: 18, fontWeight: 600, textTransform: 'none', bgcolor: '#fff', color: '#1976d2', '&:hover': { bgcolor: '#f0f0f0' } }}>
               Start Your Journey
             </Button>
           </Paper>
         </Container>
-
-        <IconButton onClick={handlePrevHero} sx={{ position: 'absolute', left: 30, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white', width: 56, height: 56, '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}>
-          <ArrowBackIos />
-        </IconButton>
-        <IconButton onClick={handleNextHero} sx={{ position: 'absolute', right: 30, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white', width: 56, height: 56, '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}>
-          <ArrowForwardIos />
-        </IconButton>
-
-        <Box sx={{ position: 'absolute', bottom: 40, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 1 }}>
-          {heroImages.map((_, index) => (
-            <Box
-              key={index}
-              onClick={() => setCurrentHero(index)}
-              sx={{
-                width: 14,
-                height: 14,
-                borderRadius: '50%',
-                bgcolor: currentHero === index ? 'white' : 'rgba(255,255,255,0.5)',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': { transform: 'scale(1.3)', bgcolor: 'white' }
-              }}
-            />
-          ))}
-        </Box>
       </Box>
 
-      {/* Popular Destinations - Same */}
-      <Container sx={{ py: 12 }}>
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography variant="h2" sx={{ fontSize: '3rem', fontWeight: 800, mb: 2, color: '#1a1a1a' }}>
-            Popular Destinations
-          </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.2rem', maxWidth: 600, mx: 'auto' }}>
-            Explore our most loved travel destinations
-          </Typography>
-        </Box>
-        <Grid container spacing={4} justifyContent="center">
-          {popularDestinations.map((dest, index) => (
-            <Grid item xs={6} sm={6} md={3} key={index}>
-              <Card
-                sx={{
-                  height: 300,
-                  borderRadius: 3,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  cursor: 'pointer',
-                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                  '&:hover': {
-                    transform: 'translateY(-20px) scale(1.02)',
-                    boxShadow: '0 30px 60px rgba(0,0,0,0.2)',
-                  },
-                }}
-                onClick={() => navigate(`/tours?destination=${dest.name}`)}
-              >
-                <CardMedia component="img" height="100%" image={dest.image} alt={dest.name} sx={{ transition: 'transform 0.5s' }} />
-                <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, bgcolor: 'rgba(0,0,0,0.8)', color: 'white', p: 3, transform: 'translateY(100%)', transition: 'all 0.4s ease-out' }}>
-                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>{dest.name}</Typography>
-                  <Typography variant="body2">{dest.tours} Tours Available</Typography>
-                </Box>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+      {/* MOST POPULAR SECTION */}
+<Box sx={{ py: 10, bgcolor: '#fcf8f5' }}>
+  <Container maxWidth="lg"> {/* Using lg ensures a standard comfortable width */}
+    <Box textAlign="center" mb={6}>
+      <Chip 
+        icon={<Star sx={{ color: '#ff9800 !important' }} />} 
+        label="Top Picks" 
+        sx={{ fontWeight: 700, mb: 2, bgcolor: '#fff', border: '1px solid #ff9800' }} 
+      />
+      <Typography variant="h3" fontWeight={800} gutterBottom>
+        Most Popular Tours
+      </Typography>
+      <Typography variant="body1" color="text.secondary">
+        Our most loved destinations by travelers around the globe.
+      </Typography>
+    </Box>
 
-      {/* 3. Domestic Tours - SCROLLING CAROUSEL (3 at a time) */}
-      <Box sx={{ bgcolor: '#f8f9fa', py: 12 }}>
-        <Container>
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography variant="h2" sx={{ fontSize: '3rem', fontWeight: 800, mb: 2 }}>
-              Domestic Tours
-            </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.2rem' }}>
-              Explore the beauty of India
-            </Typography>
-          </Box>
-          
-          <Box sx={{ position: 'relative', mb: 12 }}>
-            <Box
-              ref={domesticRef}
-              sx={{
-                display: 'flex',
-                overflowX: 'auto',
-                scrollSnapType: 'x mandatory',
-                gap: 4,
-                pb: 2,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                '&::-webkit-scrollbar': { display: 'none' },
-                scrollBehavior: 'smooth',
-              }}
-            >
-              {domesticTours.map((tour, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    flex: '0 0 360px',
-                    scrollSnapAlign: 'start',
-                    height: 420,
-                  }}
-                >
-                  <Card
-                    sx={{
-                      height: '100%',
-                      borderRadius: 3,
-                      overflow: 'hidden',
-                      transition: 'all 0.4s',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                      '&:hover': {
-                        transform: 'translateY(-10px)',
-                        boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
-                      }
-                    }}
-                  >
-                    <CardMedia component="img" height="220" image={tour.image} alt={tour.name} />
-                    <CardContent sx={{ p: 3, pt: 0 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                        {tour.name}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <AttachMoney sx={{ fontSize: 24, color: '#0891D1', mr: 1 }} />
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#0891D1' }}>
-                          ₹{tour.price.toLocaleString()}
-                        </Typography>
-                      </Box>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        endIcon={<KeyboardArrowRight />}
-                        sx={{
-                          mt: 2,
-                          py: 1.2,
-                          borderRadius: 2,
-                          bgcolor: '#0891D1',
-                          fontWeight: 600,
-                          '&:hover': { bgcolor: '#1565C0', transform: 'translateX(5px)' }
-                        }}
-                        onClick={() => navigate(`/tours?destination=${tour.name}`)}
-                      >
-                        Explore Tour
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Box>
-              ))}
-            </Box>
+   <Grid 
+  container 
+  spacing={4} 
+  sx={{ 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'stretch'
+  }}
+>
+  {popularTours.map((tour, i) => (
+    <Grid
+      item
+      key={i}
+      xs={12}
+      sm={6}
+      md={4}
+      lg={4}
+      sx={{
+        display: 'flex'
+      }}
+    >
+      <Card
+        sx={{
+          borderRadius: 2,
+    overflow: 'hidden',
+    position: 'relative',
+    width: '100%',
 
-            {/* Carousel Navigation */}
-            <IconButton
-              onClick={() => scrollLeft(domesticRef, setDomesticScroll)}
-              sx={{
-                position: 'absolute',
-                left: -60,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                bgcolor: 'white',
-                width: 48,
-                height: 48,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                '&:hover': { bgcolor: '#f5f5f5' }
-              }}
-            >
-              <ArrowBackIos sx={{ fontSize: 20 }} />
-            </IconButton>
-            <IconButton
-              onClick={() => scrollRight(domesticRef, setDomesticScroll)}
-              sx={{
-                position: 'absolute',
-                right: -60,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                bgcolor: 'white',
-                width: 48,
-                height: 48,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                '&:hover': { bgcolor: '#f5f5f5' }
-              }}
-            >
-              <ArrowForwardIos sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Box>
+    aspectRatio: '1 / 1', // ⭐ makes card perfect square
 
-          {/* International Tours - SCROLLING CAROUSEL (3 at a time) */}
-          <Box sx={{ position: 'relative' }}>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Typography variant="h2" sx={{ fontSize: '3rem', fontWeight: 800, mb: 2 }}>
-                🌍 International Tours
-              </Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.2rem' }}>
-                Discover the world with us
-              </Typography>
-            </Box>
-            
-            <Box
-              ref={internationalRef}
-              sx={{
-                display: 'flex',
-                overflowX: 'auto',
-                scrollSnapType: 'x mandatory',
-                gap: 4,
-                pb: 2,
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                '&::-webkit-scrollbar': { display: 'none' },
-                scrollBehavior: 'smooth',
-              }}
-            >
-              {internationalTours.map((tour, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    flex: '0 0 360px',
-                    scrollSnapAlign: 'start',
-                    height: 420,
-                  }}
-                >
-                  <Card
-                    sx={{
-                      height: '100%',
-                      borderRadius: 3,
-                      overflow: 'hidden',
-                      transition: 'all 0.4s',
-                      boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                      '&:hover': {
-                        transform: 'translateY(-10px)',
-                        boxShadow: '0 25px 50px rgba(0,0,0,0.2)',
-                      }
-                    }}
-                  >
-                    <CardMedia component="img" height="220" image={tour.image} alt={tour.name} />
-                    <CardContent sx={{ p: 3, pt: 0 }}>
-                      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                        {tour.name}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <AttachMoney sx={{ fontSize: 24, color: '#0891D1', mr: 1 }} />
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#0891D1' }}>
-                          ₹{tour.price.toLocaleString()}
-                        </Typography>
-                      </Box>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        endIcon={<KeyboardArrowRight />}
-                        sx={{
-                          mt: 2,
-                          py: 1.2,
-                          borderRadius: 2,
-                          bgcolor: '#0891D1',
-                          fontWeight: 600,
-                          '&:hover': { bgcolor: '#1565C0', transform: 'translateX(5px)' }
-                        }}
-                        onClick={() => navigate(`/tours?destination=${tour.name}`)}
-                      >
-                        Book Now
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Box>
-              ))}
-            </Box>
+    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+    cursor: 'pointer',
 
-            {/* International Carousel Navigation */}
-            <IconButton
-              onClick={() => scrollLeft(internationalRef, setInternationalScroll)}
-              sx={{
-                position: 'absolute',
-                left: -60,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                bgcolor: 'white',
-                width: 48,
-                height: 48,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                '&:hover': { bgcolor: '#f5f5f5' }
-              }}
-            >
-              <ArrowBackIos sx={{ fontSize: 20 }} />
-            </IconButton>
-            <IconButton
-              onClick={() => scrollRight(internationalRef, setInternationalScroll)}
-              sx={{
-                position: 'absolute',
-                right: -60,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                bgcolor: 'white',
-                width: 48,
-                height: 48,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                '&:hover': { bgcolor: '#f5f5f5' }
-              }}
-            >
-              <ArrowForwardIos sx={{ fontSize: 20 }} />
-            </IconButton>
-          </Box>
-        </Container>
-      </Box>
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
 
-      {/* Rest of the sections remain the same - Why Choose Us, Stats, Testimonials, CTA */}
-      <Container sx={{ py: 16 }}>
-        <Box sx={{ textAlign: 'center', mb: 12 }}>
-          <Typography variant="h2" sx={{ fontSize: '3rem', fontWeight: 800, mb: 2 }}>
-            Why Choose Us
-          </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.2rem', maxWidth: 700, mx: 'auto' }}>
-            Trusted by thousands of travelers worldwide
-          </Typography>
-        </Box>
-        <Grid container spacing={6}>
-          {whyChooseUs.map((item, index) => (
-            <Grid item xs={12} md={6} lg={3} key={index}>
-              <Paper sx={{ p: 6, textAlign: 'center', height: '100%', borderRadius: 4, bgcolor: 'white', transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', border: `3px solid transparent`, '&:hover': { transform: 'translateY(-15px) scale(1.02)', boxShadow: '0 30px 60px rgba(0,0,0,0.15)', borderColor: item.color, bgcolor: `${item.color}08` } }}>
-                <Box sx={{ width: 100, height: 100, borderRadius: '50%', bgcolor: `${item.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4, transition: 'all 0.3s', '&:hover': { transform: 'scale(1.1)', bgcolor: `${item.color}20` } }}>
-                  <item.icon sx={{ fontSize: 40, color: item.color }} />
-                </Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 3, color: '#1a1a1a' }}>{item.title}</Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>{item.description}</Typography>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
-      <Box sx={{ bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', py: 12, position: 'relative', overflow: 'hidden' }}>
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: '100%', opacity: 0.1 }}>
-          <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
-            <path d="M0,0 L500,100 L1000,0 Z" fill="white"/>
-          </svg>
-        </Box>
-        <Container>
-          <Grid container spacing={6} sx={{ textAlign: 'center' }}>
-            {stats.map((stat, index) => (
-              <Grid item xs={6} md={3} key={index}>
-                <Box sx={{ color: 'white', p: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                    <stat.icon sx={{ fontSize: 40, mr: 2, opacity: 0.8 }} />
-                    <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(45deg, #fff, rgba(255,255,255,0.8))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{stat.number}</Typography>
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>{stat.label}</Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      <Container sx={{ py: 16 }}>
-        <Box sx={{ textAlign: 'center', mb: 12 }}>
-          <Typography variant="h2" sx={{ fontSize: '3rem', fontWeight: 800, mb: 2 }}>
-            What Our Travelers Say
-          </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '1.2rem', maxWidth: 600, mx: 'auto' }}>
-            Don't just take our word for it
-          </Typography>
-        </Box>
-        <Grid container spacing={4} justifyContent="center">
-          {testimonials.map((testimonial, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Paper sx={{ p: 5, height: 350, borderRadius: 3, position: 'relative', overflow: 'hidden', bgcolor: 'white', boxShadow: '0 20px 60px rgba(0,0,0,0.1)', transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)', '&:hover': { transform: 'translateY(-10px)', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }, '&:before': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, height: 4, bgcolor: '#0891D1' } }}>
-                <Box sx={{ mb: 3 }}>
-                  <Rating value={testimonial.rating} readOnly size="large" sx={{ mb: 1 }} />
-                  <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>"{testimonial.comment}"</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Avatar sx={{ bgcolor: '#0891D1', width: 60, height: 60, fontSize: '1.5rem', fontWeight: 700, mr: 3 }}>{testimonial.avatar}</Avatar>
-                  <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{testimonial.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">{testimonial.location}</Typography>
-                    <Chip label={testimonial.tour} size="small" sx={{ mt: 0.5, bgcolor: 'rgba(8, 145, 209, 0.1)', color: '#0891D1', fontWeight: 600 }} />
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
-      <Box sx={{ bgcolor: '#1a1a1a', py: 12, textAlign: 'center' }}>
-        <Container>
-          <Typography variant="h2" sx={{ color: 'white', fontSize: '3rem', fontWeight: 800, mb: 3 }}>
-            Ready for Your Adventure?
-          </Typography>
-          <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.8)', mb: 6, maxWidth: 600, mx: 'auto' }}>
-            Let's create unforgettable memories together
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/tours')}
+    '&:hover img': {
+      transform: 'scale(1.1)'
+          }
+        }}
+      >
+        <CardMedia
+           component="img"
+           image={tour.image}
             sx={{
-              px: 6,
-              py: 2,
-              fontSize: '1.2rem',
-              fontWeight: 700,
-              borderRadius: 50,
-              bgcolor: '#0891D1',
-              boxShadow: '0 10px 30px rgba(8, 145, 209, 0.4)',
-              '&:hover': {
-                bgcolor: '#1565C0',
-                transform: 'translateY(-3px)',
-                boxShadow: '0 20px 40px rgba(8, 145, 209, 0.5)'
-              }
+               position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: '0.6s'
+          }}
+        />
+
+        {/* Gradient Overlay */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)'
+          }}
+        />
+
+        {/* Content */}
+        <Box
+          sx={{
+            position: 'relative',
+            p: 4,
+            color: 'white',
+            zIndex: 2
+          }}
+        >
+          <Typography
+            variant="overline"
+            sx={{
+              opacity: 0.9,
+              letterSpacing: 2,
+              display: 'block',
+              mb: 0.5
             }}
           >
-            Explore All Tours
+            {tour.caption}
+          </Typography>
+
+          <Typography
+            variant="h4"
+            fontWeight={800}
+            sx={{
+              mb: 1,
+              fontSize: { xs: '1.5rem', md: '2rem' }
+            }}
+          >
+            {tour.name}
+          </Typography>
+
+          <Typography
+            variant="h5"
+            fontWeight={800}
+            sx={{
+              color: '#4fc3f7',
+              mb: 2
+            }}
+          >
+            ₹{tour.price.toLocaleString()}
+          </Typography>
+
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{
+              borderRadius: 2,
+              py: 1.5,
+              fontWeight: 700,
+              textTransform: 'none',
+              boxShadow: '0 4px 14px rgba(0,118,255,0.39)'
+            }}
+            onClick={() =>
+              navigate(`/tours?destination=${tour.name}`)
+            }
+          >
+            Book Now
           </Button>
-        </Container>
+        </Box>
+      </Card>
+    </Grid>
+  ))}
+</Grid>
+  </Container>
+</Box>
+
+    {/* DOMESTIC SECTION */}
+<Container sx={{ py: 10 }}>
+
+  {/* Header */}
+  <Box mb={4}>
+    <Stack direction="row" spacing={1} alignItems="center" color="primary.main" mb={1}>
+      <Explore />
+      <Typography variant="button" fontWeight={700}>
+        Incredible India
+      </Typography>
+    </Stack>
+
+    <Typography variant="h4" fontWeight={800}>
+      Domestic Escapes
+    </Typography>
+
+    <Typography color="text.secondary">
+      From the snowy peaks of the North to the serene backwaters of the South.
+    </Typography>
+  </Box>
+
+  {/* Carousel Wrapper */}
+ <Box
+  sx={{
+    position: 'relative',
+    px: { xs: 2, md: 6 }, // ⭐ creates space for arrows
+  }}
+  onMouseEnter={() => setIsHovered(true)}
+  onMouseLeave={() => setIsHovered(false)}
+>
+
+  {/* LEFT ARROW */}
+  <IconButton
+    onClick={() =>
+      setDomIndex(prev =>
+        (prev - 1 + domesticTours.length) % domesticTours.length
+      )
+    }
+    sx={{
+      position: 'absolute',
+      left: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      zIndex: 2,
+      bgcolor: '#fff',
+      border: '1px solid #e0e0e0',
+      width: 48,
+      height: 48,
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      '&:hover': { bgcolor: '#f5f5f5' }
+    }}
+  >
+    <ArrowBackIosNew fontSize="small" />
+  </IconButton>
+
+
+  {/* RIGHT ARROW */}
+  <IconButton
+    onClick={() =>
+      setDomIndex(prev =>
+        (prev + 1) % domesticTours.length
+      )
+    }
+    sx={{
+      position: 'absolute',
+      right: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      zIndex: 2,
+      bgcolor: '#fff',
+      border: '1px solid #e0e0e0',
+      width: 48,
+      height: 48,
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      '&:hover': { bgcolor: '#f5f5f5' }
+    }}
+  >
+    <ArrowForwardIos fontSize="small" />
+  </IconButton>
+
+
+  {/* CARDS GRID */}
+  <Grid container spacing={3} justifyContent="center">
+    {getVisibleTours(domesticTours, domIndex).map((tour, i) => (
+
+      <Grid item xs={12} sm={6} md={4} key={i}>
+        <Card
+          sx={{
+            borderRadius: 4,
+            border: '1px solid #f0f0f0',
+            boxShadow: 'none',
+            transition: '0.3s',
+            '&:hover': {
+              boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+              transform: 'translateY(-5px)'
+            }
+          }}
+        >
+          <CardMedia
+            component="img"
+            height="220"
+            image={tour.image}
+            sx={{ objectFit: 'cover' }}
+          />
+
+          <CardContent>
+            <Typography variant="h6" fontWeight={700}>
+              {tour.name}
+            </Typography>
+
+            <Typography variant="h5" color="primary" fontWeight={800} my={1}>
+              ₹{tour.price.toLocaleString()}
+            </Typography>
+
+            <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: 1,
+                    fontWeight: 600,
+                    textTransform: 'none'
+                  }}
+                >
+                  GET A QUOTE
+                </Button>
+          </CardContent>
+        </Card>
+      </Grid>
+
+    ))}
+  </Grid>
+
+</Box>
+
+</Container>
+
+      {/* INTERNATIONAL SECTION */}
+<Box sx={{ bgcolor: '#f8f9fa', py: 10 }}>
+  <Container>
+
+    {/* Header */}
+    <Box mb={4}>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        color="primary.main"
+        mb={1}
+      >
+        <Public />
+        <Typography variant="button" fontWeight={700}>
+          Global Wonders
+        </Typography>
+      </Stack>
+
+      <Typography variant="h4" fontWeight={800}>
+        International Wonders
+      </Typography>
+
+      <Typography color="text.secondary">
+        Collect stamps in your passport with our curated global experiences.
+      </Typography>
+    </Box>
+
+
+    {/* Carousel Wrapper */}
+    <Box
+      sx={{
+        position: 'relative',
+        px: { xs: 2, md: 6 }
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+
+      {/* LEFT ARROW */}
+      <IconButton
+        onClick={() =>
+          setIntIndex(prev =>
+            (prev - 1 + internationalTours.length) % internationalTours.length
+          )
+        }
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 2,
+          bgcolor: '#fff',
+          border: '1px solid #e0e0e0',
+          width: 48,
+          height: 48,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          '&:hover': {
+            bgcolor: '#f5f5f5'
+          }
+        }}
+      >
+        <ArrowBackIosNew fontSize="small" />
+      </IconButton>
+
+
+      {/* RIGHT ARROW */}
+      <IconButton
+        onClick={() =>
+          setIntIndex(prev =>
+            (prev + 1) % internationalTours.length
+          )
+        }
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 2,
+          bgcolor: '#fff',
+          border: '1px solid #e0e0e0',
+          width: 48,
+          height: 48,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          '&:hover': {
+            bgcolor: '#f5f5f5'
+          }
+        }}
+      >
+        <ArrowForwardIos fontSize="small" />
+      </IconButton>
+
+
+      {/* Cards */}
+      <Grid container spacing={3} justifyContent="center">
+
+        {getVisibleTours(internationalTours, intIndex).map((tour, i) => (
+
+          <Grid item xs={12} sm={6} md={4} key={i}>
+
+            <Card
+              sx={{
+                borderRadius: 4,
+                border: '1px solid #eee',
+                boxShadow: 'none',
+                transition: '0.3s',
+                '&:hover': {
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+                  transform: 'translateY(-5px)'
+                }
+              }}
+            >
+
+              <CardMedia
+                component="img"
+                height="220"
+                image={tour.image}
+                sx={{ objectFit: 'cover' }}
+              />
+
+              <CardContent sx={{ textAlign: 'center' }}>
+
+                <Typography variant="h6" fontWeight={700}>
+                  {tour.name}
+                </Typography>
+
+                <Typography
+                  variant="h5"
+                  color="primary"
+                  fontWeight={800}
+                  my={1}
+                >
+                  ₹{tour.price.toLocaleString()}
+                </Typography>
+
+                <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: 1,
+                    fontWeight: 600,
+                    textTransform: 'none'
+                  }}
+                >
+                  GET A QUOTE
+                </Button>
+
+              </CardContent>
+
+            </Card>
+
+          </Grid>
+
+        ))}
+
+      </Grid>
+
+    </Box>
+
+  </Container>
+</Box>
+
+      <Grid
+  container
+  spacing={8}
+  alignItems="flex-start"
+  justifyContent="center"
+>
+
+  {/* LEFT SIDE */}
+  <Grid item xs={12} md={6}>
+
+    <Box sx={{ maxWidth: 500 }}>
+
+      <Typography variant="h5" fontWeight={700} mb={3}>
+        Get in Touch
+      </Typography>
+
+      {/* Phone */}
+      <Box display="flex" mb={2}>
+        <Typography mr={2}>📞</Typography>
+        <Box>
+          <Typography>+91 98765 43210</Typography>
+          <Typography>+91 91234 56789</Typography>
+        </Box>
       </Box>
+
+      {/* Email */}
+      <Box display="flex" mb={2}>
+        <Typography mr={2}>✉️</Typography>
+        <Typography>holidayscare@gmail.com</Typography>
+      </Box>
+
+      {/* Address */}
+      <Box display="flex" mb={3}>
+        <Typography mr={2}>📍</Typography>
+        <Typography>
+          6th Floor, Roongta Shopping Hub, Nashik, Maharashtra, India
+        </Typography>
+      </Box>
+
+      {/* Map */}
+      <Paper
+        elevation={4}
+        sx={{
+          borderRadius: 4,
+          overflow: "hidden",
+          height: 260,
+          width: "100%"
+        }}
+      >
+        <iframe
+          title="map"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          src="https://www.google.com/maps?q=Roongta%20Shopping%20Hub%20Nashik&output=embed"
+        />
+      </Paper>
+
+    </Box>
+
+  </Grid>
+
+
+
+  {/* RIGHT SIDE FORM */}
+  <Grid item xs={12} md={6}>
+
+    <Paper
+      elevation={6}
+      sx={{
+        p: 5,
+        borderRadius: 4,
+        width: "100%",
+        maxWidth: 520,   // ⭐ makes form bigger
+        ml: { md: 4 }    // ⭐ reduces gap
+      }}
+    >
+
+      <Typography variant="h5" fontWeight={700} mb={1}>
+        Let's Talk
+      </Typography>
+
+      <Typography color="text.secondary" mb={4}>
+        We'll respond within 24 hours.
+      </Typography>
+
+
+      <Stack spacing={3}>
+
+        <TextField fullWidth label="Your Name" />
+
+        <TextField fullWidth label="Phone Number" />
+
+        <TextField fullWidth label="Email Address" />
+
+        <TextField fullWidth multiline rows={4} label="Your Message" />
+
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{
+            py: 1.6,
+            borderRadius: 3,
+            fontWeight: 700,
+            fontSize: 16,
+            background:
+              "linear-gradient(90deg,#1976d2,#42a5f5)"
+          }}
+        >
+          Send Message
+        </Button>
+
+      </Stack>
+
+    </Paper>
+
+  </Grid>
+
+</Grid>
+
     </Box>
   );
 };
