@@ -35,7 +35,7 @@ const Navbar = () => {
   // Menu items
   const menuItems = [
     { text: 'Home', path: '/' },
-    { text: 'About', path: '/about' },
+    { text: 'About Us', path: '/about' },
     { text: 'Tours', path: '/tours' },
     { text: 'Contact', path: '/contact' },
   ];
@@ -56,11 +56,9 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  // Mobile Drawer
+  // Mobile Drawer (unchanged)
   const drawer = (
     <Box sx={{ width: 270 }}>
-
-      {/* Logo + close */}
       <Box
         sx={{
           display: 'flex',
@@ -73,16 +71,19 @@ const Navbar = () => {
           component="img"
           src="/logo.png"
           alt="logo"
-          sx={{ height: 50 }}
+          sx={{
+            height: 50,
+            width: 'auto',
+            maxWidth: 160,
+            objectFit: 'contain',
+            display: 'block'
+          }}
         />
-
         <IconButton onClick={handleDrawerToggle}>
           <CloseIcon />
         </IconButton>
       </Box>
-
       <Divider />
-
       <List>
         {menuItems.map((item) => (
           <ListItemButton
@@ -99,7 +100,6 @@ const Navbar = () => {
             <ListItemText primary={item.text} />
           </ListItemButton>
         ))}
-
         {isAuthenticated && (
           <ListItemButton onClick={handleLogout}>
             <ListItemText
@@ -123,35 +123,42 @@ const Navbar = () => {
         }}
       >
         <Container maxWidth="lg">
-
           <Toolbar
             sx={{
               minHeight: { xs: 65, md: 85 },
+              height: { xs: 65, md: 85 }, // Fixed height
               display: 'flex',
               justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-
-            {/* Logo only (premium look) */}
+            {/* Logo - FIXED: Much larger + centered */}
             <Box
               component={Link}
               to="/"
-              sx={{ display: 'flex', alignItems: 'center' }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: { xs: 140, md: 260 },
+                height: { xs: 65, md: 85 }, // Full toolbar height
+              }}
             >
               <Box
                 component="img"
                 src="/logo.png"
                 alt="Holidays Care"
                 sx={{
-                  height: { xs: 50, md: 65 },
+                  height: { xs: 45, md: 100 }, // Much larger desktop
                   width: 'auto',
+                  maxWidth: { xs: 140, md: 260 },
                   objectFit: 'contain',
+                  display: 'block',
                 }}
               />
             </Box>
 
-
-            {/* Desktop Menu */}
+            {/* Desktop Menu (unchanged) */}
             {isMobile ? (
               <IconButton onClick={handleDrawerToggle}>
                 <MenuIcon sx={{ fontSize: 30 }} />
@@ -172,17 +179,12 @@ const Navbar = () => {
                     sx={{
                       fontSize: '15px',
                       fontWeight: 600,
-                      color: isActive(item.path)
-                        ? '#1976d2'
-                        : '#333',
-
+                      color: isActive(item.path) ? '#1976d2' : '#333',
                       position: 'relative',
-
                       '&:hover': {
                         color: '#1976d2',
                         backgroundColor: 'transparent',
                       },
-
                       '&::after': isActive(item.path)
                         ? {
                             content: '""',
@@ -200,7 +202,6 @@ const Navbar = () => {
                     {item.text}
                   </Button>
                 ))}
-
                 {isAuthenticated && (
                   <Button
                     variant="contained"
@@ -211,7 +212,6 @@ const Navbar = () => {
                       borderRadius: 2,
                       px: 3,
                       fontWeight: 600,
-
                       '&:hover': {
                         bgcolor: '#1565c0',
                       },
@@ -220,21 +220,13 @@ const Navbar = () => {
                     Logout
                   </Button>
                 )}
-
               </Box>
             )}
-
           </Toolbar>
-
         </Container>
       </AppBar>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-      >
+      <Drawer anchor="right" open={mobileOpen} onClose={handleDrawerToggle}>
         {drawer}
       </Drawer>
     </>

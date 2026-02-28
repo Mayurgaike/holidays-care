@@ -4,7 +4,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const WhatsAppButton = () => {
   const handleClick = () => {
-    const phoneNumber = '919999999999'; // Replace with actual number
+    const phoneNumber = '917666642587'; 
     const message = 'Hello! I would like to know more about your tour packages.';
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

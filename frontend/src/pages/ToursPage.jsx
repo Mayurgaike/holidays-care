@@ -1,491 +1,253 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
   Typography,
-  Tabs,
-  Tab,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActionArea,
-  Button,
-  Chip,
-  CircularProgress,
-  TextField,
-  InputAdornment,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Rating,
-  Slider,
-  Paper,
-  Drawer,
-  IconButton,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import SortIcon from '@mui/icons-material/Sort';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import CloseIcon from '@mui/icons-material/Close';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { toursAPI } from '../services/api';
+  ToggleButton,
+  ToggleButtonGroup
+} from "@mui/material";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+
+const domesticTours = [
+  { id: "kashmir", name: "Kashmir", price: "₹24,999", image: "/kashmir.jpg",
+    font: "'Playfair Display', serif", color: "#fff" },
+  { id: "ladakh", name: "Leh Ladakh", price: "₹34,999", image: "/ladakh.jpg",
+    font: "'Bebas Neue', cursive", color: "#f0c040" },
+  { id: "sikkim", name: "Sikkim", price: "₹29,999", image: "/sikkim.jpg",
+    font: "'Dancing Script', cursive", color: "#fff" },
+  { id: "rajasthan", name: "Rajasthan", price: "₹19,999", image: "/rajasthan.jpg",
+    font: "'Cinzel', serif", color: "#fff" },
+  { id: "himachal", name: "Himachal Pradesh", price: "₹29,999", image: "/himachal.jpg",
+    font: "'Satisfy', cursive", color: "#fff" },
+  { id: "uttarakhand", name: "Uttarakhand", price: "₹24,999", image: "/uttarakhand.jpg",
+    font: "'Righteous', cursive", color: "#c8f5ff" },
+  { id: "kerala", name: "Kerala", price: "₹14,999", image: "/kerala.jpg",
+    font: "'Pacifico', cursive", color: "#a8f0a0" },
+  { id: "northeast", name: "Northeast", price: "₹64,999", image: "/northeast.jpg",
+    font: "'Lobster', cursive", color: "#ffe0b2" },
+  { id: "varanasi", name: "Varanasi", price: "₹24,999", image: "/varanasi.jpg",
+    font: "'Cinzel', serif", color: "#ffd700" }
+];
+
+const internationalTours = [
+  { id: "nepal", name: "Nepal", price: "₹45,999", image: "/nepal.jpg",
+    font: "'Playfair Display', serif", color: "#fff" },
+  { id: "singapore", name: "Singapore", price: "₹59,999", image: "/singapore.jpg",
+    font: "'Dancing Script', cursive", color: "#7ee8f8" },
+  { id: "vietnam", name: "Vietnam", price: "₹65,999", image: "/vietnam.jpg",
+    font: "'Pacifico', cursive", color: "#fff" },
+  { id: "dubai", name: "Dubai", price: "₹49,999", image: "/dubai.jpg",
+    font: "'Cinzel', serif", color: "#ffd700" },
+  { id: "baku", name: "Baku", price: "₹44,999", image: "/baku.jpg",
+    font: "'Exo 2', sans-serif", color: "#e0f0ff" },
+  { id: "srilanka", name: "Sri Lanka", price: "₹34,999", image: "/srilanka.jpg",
+    font: "'Lobster', cursive", color: "#a8f0a0" },
+  { id: "maldives", name: "Maldives", price: "₹85,000", image: "/maldives.jpg",
+    font: "'Satisfy', cursive", color: "#c8f5ff" },
+  { id: "bali", name: "Bali", price: "₹65,999", image: "/bali.jpg",
+    font: "'Permanent Marker', cursive", color: "#ffe0b2" },
+  { id: "thailand", name: "Thailand", price: "₹45,999", image: "/thailand.jpg",
+    font: "'Dela Gothic One', cursive", color: "#fff" }
+];
 
 const ToursPage = () => {
+  const [type, setType] = useState("international");
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [tabValue, setTabValue] = useState(0);
-  const [allTours, setAllTours] = useState([]);
-  const [filteredTours, setFilteredTours] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [priceRange, setPriceRange] = useState([0, 100000]);
-  const [sortBy, setSortBy] = useState('featured');
-  const [selectedDestination, setSelectedDestination] = useState('');
-
-  useEffect(() => {
-    fetchTours();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [allTours, tabValue, searchQuery, priceRange, sortBy, selectedDestination]);
-
-  const fetchTours = async () => {
-    try {
-      setLoading(true);
-      const response = await toursAPI.getAll();
-      setAllTours(response.data);
-    } catch (error) {
-      console.error('Error fetching tours:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyFilters = () => {
-    let filtered = allTours;
-
-    // Category filter
-    const category = tabValue === 0 ? 'domestic' : 'international';
-    filtered = filtered.filter((tour) => tour.category === category);
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter((tour) =>
-        tour.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tour.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tour.destination?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Price filter
-    filtered = filtered.filter(
-      (tour) => tour.price >= priceRange[0] && tour.price <= priceRange[1]
-    );
-
-    // Destination filter
-    if (selectedDestination) {
-      filtered = filtered.filter(
-        (tour) => tour.destination === selectedDestination
-      );
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'priceLow':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'priceHigh':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-        break;
-      case 'popular':
-        filtered.sort((a, b) => (b.popular ? 1 : 0) - (a.popular ? 1 : 0));
-        break;
-      default: // featured
-        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-    }
-
-    setFilteredTours(filtered);
-  };
-
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
-  const getUniqueDestinations = () => {
-    const destinations = allTours
-      .filter((tour) => tour.destination)
-      .map((tour) => tour.destination);
-    return [...new Set(destinations)];
-  };
-
-  const FilterPanel = () => (
-    <Box>
-      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-        Filters
-      </Typography>
-
-      {/* Search */}
-      <TextField
-        fullWidth
-        placeholder="Search tours..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-        sx={{ mb: 3 }}
-      />
-
-      {/* Destination */}
-      <FormControl fullWidth sx={{ mb: 3 }}>
-        <InputLabel>Destination</InputLabel>
-        <Select
-          value={selectedDestination}
-          label="Destination"
-          onChange={(e) => setSelectedDestination(e.target.value)}
-        >
-          <MenuItem value="">All Destinations</MenuItem>
-          {getUniqueDestinations().map((dest) => (
-            <MenuItem key={dest} value={dest}>
-              {dest}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {/* Price Range */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" sx={{ mb: 2 }}>
-          Price Range: ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
-        </Typography>
-        <Slider
-          value={priceRange}
-          onChange={(e, newValue) => setPriceRange(newValue)}
-          valueLabelDisplay="auto"
-          min={0}
-          max={100000}
-          step={5000}
-          valueLabelFormat={(value) => `₹${value.toLocaleString()}`}
-        />
-      </Box>
-
-      {/* Reset Filters */}
-      <Button
-        fullWidth
-        variant="outlined"
-        onClick={() => {
-          setSearchQuery('');
-          setPriceRange([0, 100000]);
-          setSelectedDestination('');
-          setSortBy('featured');
-        }}
-      >
-        Reset Filters
-      </Button>
-    </Box>
-  );
-
-  const TourCard = ({ tour }) => (
-    <Card
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.3s',
-        '&:hover': {
-          transform: 'translateY(-8px)',
-          boxShadow: 8,
-        },
-      }}
-    >
-      <CardActionArea onClick={() => navigate(`/tours/${tour._id}`)}>
-        <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="240"
-            image={
-              tour.images?.[0]
-                ? `http://localhost:5000${tour.images[0]}`
-                : 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400'
-            }
-            alt={tour.title}
-          />
-          {tour.originalPrice && (
-            <Chip
-              label={`SAVE ${Math.round((1 - tour.price / tour.originalPrice) * 100)}%`}
-              color="error"
-              size="small"
-              sx={{
-                position: 'absolute',
-                top: 12,
-                right: 12,
-                fontWeight: 700,
-              }}
-            />
-          )}
-          {tour.featured && (
-            <Chip
-              label="Featured"
-              size="small"
-              sx={{
-                position: 'absolute',
-                top: 12,
-                left: 12,
-                bgcolor: '#FFD700',
-                color: '#000',
-                fontWeight: 700,
-              }}
-            />
-          )}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 12,
-              left: 12,
-              display: 'flex',
-              gap: 1,
-            }}
-          >
-            <Chip
-              icon={<LocationOnIcon sx={{ fontSize: 16 }} />}
-              label={tour.destination || tour.category}
-              size="small"
-              sx={{ bgcolor: 'rgba(255,255,255,0.95)', fontWeight: 600 }}
-            />
-          </Box>
-        </Box>
-        <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-            <Rating value={tour.rating || 4.5} precision={0.5} size="small" readOnly />
-            <Typography variant="body2" color="text.secondary">
-              ({tour.totalReviews || 0})
-            </Typography>
-            {tour.difficulty && (
-              <Chip
-                label={tour.difficulty}
-                size="small"
-                sx={{
-                  ml: 'auto',
-                  height: 20,
-                  fontSize: '0.7rem',
-                  bgcolor:
-                    tour.difficulty === 'easy'
-                      ? 'success.light'
-                      : tour.difficulty === 'moderate'
-                      ? 'warning.light'
-                      : 'error.light',
-                }}
-              />
-            )}
-          </Box>
-
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1.5 }}>
-            {tour.title}
-          </Typography>
-
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{
-              mb: 2,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
-          >
-            {tour.description}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <CalendarTodayIcon fontSize="small" color="action" />
-            <Typography variant="body2" color="text.secondary">
-              {tour.duration}
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              borderTop: '1px solid #e0e0e0',
-              pt: 2,
-            }}
-          >
-            <Box>
-              <Typography variant="h5" sx={{ color: '#0891D1', fontWeight: 700 }}>
-                ₹{tour.price.toLocaleString()}
-              </Typography>
-              {tour.originalPrice && (
-                <Typography
-                  variant="body2"
-                  sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
-                >
-                  ₹{tour.originalPrice.toLocaleString()}
-                </Typography>
-              )}
-            </Box>
-            <Button
-              variant="contained"
-              size="small"
-              sx={{ bgcolor: '#7CB342', '&:hover': { bgcolor: '#689F38' } }}
-            >
-              View Details
-            </Button>
-          </Box>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  );
+  const tours = type === "international" ? internationalTours : domesticTours;
 
   return (
-    <Box>
-      {/* Header */}
-      <Box
+    <Container sx={{ py: { xs: 6, md: 10 } }}>
+
+      {/* Heading */}
+      <Typography
+        variant="h3"
+        align="center"
         sx={{
-          background: 'linear-gradient(135deg, #0891D1 0%, #1565C0 100%)',
-          color: 'white',
-          py: 8,
-          textAlign: 'center',
+          fontWeight: 700,
+          mb: 5,
+          color: "#0d47a1",
+          fontSize: { xs: "1.8rem", sm: "2.4rem", md: "3rem" }
         }}
       >
-        <Container>
-          <Typography variant="h2" sx={{ fontWeight: 700, mb: 2 }}>
-            Explore Our Tours
-          </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.95 }}>
-            Choose from {allTours.length}+ amazing destinations
-          </Typography>
-        </Container>
-      </Box>
+        Explore Our Tours
+      </Typography>
 
-      {/* Content */}
-      <Container sx={{ py: 6 }}>
-        {/* Tabs and Sort */}
-        <Box
+      {/* Toggle Buttons */}
+      <Box sx={{ display: "flex", justifyContent: "center", mb: 7 }}>
+        <ToggleButtonGroup
+          value={type}
+          exclusive
+          onChange={(e, newValue) => newValue && setType(newValue)}
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 4,
-            flexWrap: 'wrap',
-            gap: 2,
+            background: "#f4f6f8",
+            borderRadius: "40px",
+            p: 0.5,
+            gap: 1
           }}
         >
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
+          <ToggleButton
+            value="international"
             sx={{
-              '& .MuiTab-root': {
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                minWidth: 150,
-              },
+              px: { xs: 2.5, sm: 4 },
+              py: 1,
+              borderRadius: "30px",
+              border: "none",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+              color: "#555",
+              "&.Mui-selected": {
+                color: "white",
+                background: "linear-gradient(135deg,#1976d2,#0d47a1)"
+              }
             }}
           >
-            <Tab label="🏠 Domestic" />
-            <Tab label="🌍 International" />
-          </Tabs>
+            International
+          </ToggleButton>
 
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <IconButton
-              sx={{ display: { md: 'none' } }}
-              onClick={() => setMobileFilterOpen(true)}
-            >
-              <FilterListIcon />
-            </IconButton>
-            <FormControl size="small" sx={{ minWidth: 150 }}>
-              <InputLabel>Sort By</InputLabel>
-              <Select
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(e.target.value)}
-                startAdornment={<SortIcon sx={{ mr: 1, fontSize: 20 }} />}
-              >
-                <MenuItem value="featured">Featured</MenuItem>
-                <MenuItem value="popular">Most Popular</MenuItem>
-                <MenuItem value="priceLow">Price: Low to High</MenuItem>
-                <MenuItem value="priceHigh">Price: High to Low</MenuItem>
-                <MenuItem value="rating">Highest Rated</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </Box>
+          <ToggleButton
+            value="domestic"
+            sx={{
+              px: { xs: 2.5, sm: 4 },
+              py: 1,
+              borderRadius: "30px",
+              border: "none",
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: { xs: "0.8rem", sm: "0.95rem" },
+              color: "#555",
+              "&.Mui-selected": {
+                color: "white",
+                background: "linear-gradient(135deg,#1976d2,#0d47a1)"
+              }
+            }}
+          >
+            Domestic
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
-        <Grid container spacing={3}>
-          {/* Filters Sidebar - Desktop */}
-          <Grid item xs={12} md={3} sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Paper elevation={2} sx={{ p: 3, position: 'sticky', top: 100 }}>
-              <FilterPanel />
-            </Paper>
-          </Grid>
-
-          {/* Tours Grid */}
-          <Grid item xs={12} md={9}>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                <CircularProgress size={60} />
-              </Box>
-            ) : filteredTours.length > 0 ? (
-              <>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Showing {filteredTours.length} tours
-                </Typography>
-                <Grid container spacing={3}>
-                  {filteredTours.map((tour) => (
-                    <Grid item xs={12} sm={6} lg={4} key={tour._id}>
-                      <TourCard tour={tour} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Typography variant="h5" color="text.secondary" gutterBottom>
-                  No tours found
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Try adjusting your filters or search criteria
-                </Typography>
-              </Box>
-            )}
-          </Grid>
-        </Grid>
-      </Container>
-
-      {/* Mobile Filter Drawer */}
-      <Drawer
-        anchor="right"
-        open={mobileFilterOpen}
-        onClose={() => setMobileFilterOpen(false)}
+      {/* ✅ REPLACED Grid with Flexbox — this is the key fix */}
+      <Box
+        sx={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: { xs: 4, sm: 5, md: 6 }
+        }}
       >
-        <Box sx={{ width: 300, p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-            <Typography variant="h6">Filters</Typography>
-            <IconButton onClick={() => setMobileFilterOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <FilterPanel />
-        </Box>
-      </Drawer>
-    </Box>
+        {tours.map((tour, index) => (
+          <motion.div
+            key={tour.id}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            <Box
+              onClick={() => navigate(`/tour/${tour.id}`)}
+              sx={{
+                position: "relative",
+                width: { xs: 220, sm: 240, md: 280 },
+                height: { xs: 300, sm: 340, md: 400 },
+                borderRadius: "180px 180px 180px 180px",
+                overflow: "hidden",
+                cursor: "pointer",
+                boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
+
+                "&:hover .overlay": {
+                  opacity: 1
+                },
+                "&:hover img": {
+                  transform: "scale(1.15)"
+                }
+              }}
+            >
+              {/* Image */}
+              <Box
+                component="img"
+                src={tour.image}
+                alt={tour.name}
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transition: "transform 0.6s ease"
+                }}
+              />
+
+              {/* Destination Name */}
+              {/* Destination Name */}
+              <Typography
+                sx={{
+                  position: "absolute",
+                  top: 40,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: { xs: 18, sm: 22, md: 26 },
+                  fontWeight: 800,
+                  fontFamily: tour.font,        // ✅ unique font per destination
+                  color: tour.color,            // ✅ unique color per destination
+                  textShadow: "0 4px 15px rgba(0,0,0,0.6)",
+                  textAlign: "center",
+                  width: "80%",
+                }}
+              >
+                {tour.name}
+              </Typography>
+
+              {/* Hover Overlay */}
+              <Box
+                className="overlay"
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  pb: 4,
+                  opacity: 0,
+                  transition: "0.4s"
+                }}
+              >
+                <Typography
+                  sx={{
+                    color: "white",
+                    fontSize: { xs: 14, sm: 16, md: 18 },
+                    fontWeight: 500,
+                    mb: 2,
+                    textAlign: "center"
+                  }}
+                >
+                  Starting at <br />
+                  <b>{tour.price}</b>
+                </Typography>
+
+                <Box
+                  sx={{
+                    width: 45,
+                    height: 45,
+                    borderRadius: "50%",
+                    background: "#115eec",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <ArrowOutwardIcon sx={{ color: "white" }} />
+                </Box>
+              </Box>
+
+            </Box>
+          </motion.div>
+        ))}
+      </Box>
+
+    </Container>
   );
 };
 

@@ -1,253 +1,237 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
-  Container,
   Typography,
-  Grid,
-  Paper,
   TextField,
   Button,
-  Alert,
-  Snackbar,
-} from '@mui/material';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
-import SendIcon from '@mui/icons-material/Send';
-import { contactAPI } from '../services/api';
+  Stack,
+  IconButton,
+  Paper
+} from "@mui/material";
+
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    destination: '',
-    message: '',
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    message: ""
   });
-  const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      await contactAPI.submit(formData);
-      setSnackbar({
-        open: true,
-        message: 'Enquiry submitted successfully! We will contact you soon.',
-        severity: 'success',
-      });
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        destination: '',
-        message: '',
-      });
-      
-      // Open WhatsApp with the enquiry details
-      const whatsappMessage = `New Enquiry from ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nDestination: ${formData.destination}\nMessage: ${formData.message}`;
-      const url = `https://wa.me/919999999999?text=${encodeURIComponent(whatsappMessage)}`;
-      window.open(url, '_blank');
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Error submitting enquiry. Please try again.',
-        severity: 'error',
-      });
-    } finally {
-      setLoading(false);
-    }
+    const phone = "917666642587";
+    const text =
+      `Hello Holidays Care,%0A%0A` +
+      `Name: ${form.name}%0A` +
+      `Phone: ${form.phone}%0A` +
+      `Email: ${form.email}%0A` +
+      `Message: ${form.message}`;
+    window.open(`https://wa.me/${phone}?text=${text}`);
   };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
-  const contactInfo = [
-    {
-      icon: <LocationOnIcon sx={{ fontSize: 40, color: '#0891D1' }} />,
-      title: 'Address',
-      details: '123 Travel Street, Mumbai, Maharashtra, India - 400001',
-    },
-    {
-      icon: <PhoneIcon sx={{ fontSize: 40, color: '#0891D1' }} />,
-      title: 'Phone',
-      details: '+91 99999 99999',
-    },
-    {
-      icon: <EmailIcon sx={{ fontSize: 40, color: '#0891D1' }} />,
-      title: 'Email',
-      details: 'info@holidayscare.com',
-    },
-  ];
 
   return (
-    <Box>
-      {/* Header */}
+    <Box sx={{ py: 10, px: { xs: 2, sm: 4 } }}>
+
+      {/* PAGE TITLE */}
+      <Typography
+        variant="h3"
+        align="center"
+        sx={{ fontWeight: 700, mb: 2, color: "#0d47a1", fontSize: { xs: "2rem", md: "3rem" } }}
+      >
+        Contact Us
+      </Typography>
+
+      <Typography align="center" sx={{ mb: 8, color: "#555" }}>
+        We'd love to hear from you. Reach out for travel packages or queries.
+      </Typography>
+
+      {/* 50-50 FLEXBOX LAYOUT */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #0891D1 0%, #1565C0 100%)',
-          color: 'white',
-          py: 8,
-          textAlign: 'center',
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: { xs: 5, md: 8 },
+          maxWidth: 1100,
+          mx: "auto",
+          alignItems: "flex-start"
         }}
       >
-        <Container>
-          <Typography variant="h2" sx={{ fontWeight: 700, mb: 2 }}>
-            Contact Us
-          </Typography>
-          <Typography variant="h5" sx={{ opacity: 0.9 }}>
-            We'd Love to Hear From You
-          </Typography>
-        </Container>
-      </Box>
 
-      {/* Contact Info Cards */}
-      <Container sx={{ py: 6 }}>
-        <Grid container spacing={4} sx={{ mb: 6 }}>
-          {contactInfo.map((info, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  textAlign: 'center',
-                  height: '100%',
-                  transition: 'transform 0.3s',
-                  '&:hover': { transform: 'translateY(-10px)' },
-                }}
-              >
-                <Box sx={{ mb: 2 }}>{info.icon}</Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {info.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {info.details}
-                </Typography>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
+        {/* LEFT SIDE */}
+        <Box sx={{ flex: 1, width: { xs: "100%", md: "50%" } }}>
 
-        {/* Contact Form */}
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 4, textAlign: 'center' }}>
-            Send Us an Enquiry
+          <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+            Get in Touch
           </Typography>
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+
+          <Stack spacing={3}>
+
+            <Stack direction="row" spacing={2} alignItems="flex-start">
+              <PhoneIcon sx={{ color: "#1976d2", mt: 0.5 }} />
+              <Typography>
+                +91 7666642587 <br />
+                +91 9923442592
+              </Typography>
+            </Stack>
+
+            <Stack direction="row" spacing={2} alignItems="center">
+              <EmailIcon sx={{ color: "#1976d2" }} />
+              <Typography>sales.holidaycare@gmail.com</Typography>
+            </Stack>
+
+            <Stack direction="row" spacing={2} alignItems="flex-start">
+              <LocationOnIcon sx={{ color: "#1976d2", mt: 0.5 }} />
+              <Typography>Roongta Shopping Hub, Nashik, Maharashtra</Typography>
+            </Stack>
+
+          </Stack>
+
+         {/* SOCIAL ICONS */}
+<Box sx={{ mt: 4 }}>
+  <Typography sx={{ fontWeight: 600, mb: 1.5 }}>Follow Us</Typography>
+  <Stack direction="row" spacing={2}>
+
+    {/* Instagram — light bg, blue icon */}
+    <IconButton
+      href="#"
+      sx={{
+        bgcolor: "#f7fafd",        // ✅ light blue background
+        color: "#1976d2",          // ✅ blue icon
+        "&:hover": { bgcolor: "#bbdefb" }
+      }}
+    >
+      <InstagramIcon />
+    </IconButton>
+
+    {/* Facebook — light bg, blue icon */}
+    <IconButton
+      href="#"
+      sx={{
+        bgcolor: "#f7fafd",       
+        color: "#3e84ca",          
+        
+      }}
+    >
+      <FacebookIcon />
+    </IconButton>
+
+  </Stack>
+</Box>
+
+          {/* GOOGLE MAP */}
+          <Box sx={{ mt: 4 }}>
+            <iframe
+              src="https://www.google.com/maps?q=Roongta%20Shopping%20Hub%20Nashik&output=embed"
+              width="100%"
+              height="280"
+              style={{ border: 0, borderRadius: "1px" }}
+              loading="lazy"
+            />
+          </Box>
+
+        </Box>
+
+        {/* RIGHT SIDE */}
+        <Box sx={{ flex: 1, width: { xs: "100%", md: "50%" } }}>
+          <Paper
+            elevation={6}
+            sx={{
+              p: { xs: 3, md: 5 },
+              borderRadius: 3,
+              boxShadow: "0 10px 35px rgba(0,0,0,0.12)"
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+              Let's Talk
+            </Typography>
+
+            <Typography
+              variant="body2"
+              sx={{ mb: 4, color: "text.secondary", fontSize: "0.95rem" }}
+            >
+              Unlock your travel planning today.
+            </Typography>
+
+            <Box component="form" onSubmit={handleSubmit}>
+              <Stack spacing={3}>
+
                 <TextField
-                  fullWidth
-                  label="Name"
                   name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
+                  label="Your Name"
                   fullWidth
-                  label="Phone"
+                  required
+                  value={form.name}
+                  onChange={handleChange}
+                />
+
+                <TextField
                   name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
+                  label="Phone Number"
                   fullWidth
-                  label="Email"
+                  required
+                  value={form.phone}
+                  onChange={handleChange}
+                />
+
+                <TextField
                   name="email"
+                  label="Email Address"
                   type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
                   fullWidth
-                  label="Destination"
-                  name="destination"
-                  value={formData.destination}
-                  onChange={handleChange}
                   required
+                  value={form.email}
+                  onChange={handleChange}
                 />
-              </Grid>
-              <Grid item xs={12}>
+
                 <TextField
-                  fullWidth
-                  label="Message"
                   name="message"
-                  value={formData.message}
-                  onChange={handleChange}
+                  label="Your Message"
+                  fullWidth
                   multiline
-                  rows={4}
+                  minRows={4}
                   required
+                  value={form.message}
+                  onChange={handleChange}
                 />
-              </Grid>
-              <Grid item xs={12}>
+
                 <Button
                   type="submit"
                   variant="contained"
-                  size="large"
                   fullWidth
-                  disabled={loading}
-                  endIcon={<SendIcon />}
                   sx={{
-                    bgcolor: '#0891D1',
+                    borderRadius: 1,
                     py: 1.5,
-                    '&:hover': { bgcolor: '#1565C0' },
+                    fontWeight: 600,
+                    fontSize: "0.95rem",
+                    background: "linear-gradient(90deg,#2563eb,#3b82f6)",
+                    boxShadow: "0 6px 18px rgba(37,99,235,0.35)",
+                    textTransform: "none",
+                    "&:hover": {
+                      background: "linear-gradient(90deg,#1e40af,#2563eb)",
+                      boxShadow: "0 8px 22px rgba(30,64,175,0.45)"
+                    }
                   }}
                 >
-                  {loading ? 'Submitting...' : 'Submit Enquiry'}
+                  Send Message
                 </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </Paper>
 
-        {/* Map Section */}
-        <Box sx={{ mt: 6 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 3, textAlign: 'center' }}>
-            Visit Our Office
-          </Typography>
-          <Paper elevation={3} sx={{ overflow: 'hidden' }}>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609923277!2d72.74109995709657!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1234567890"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              title="Office Location"
-            />
+              </Stack>
+            </Box>
           </Paper>
         </Box>
-      </Container>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      </Box>
     </Box>
   );
 };
