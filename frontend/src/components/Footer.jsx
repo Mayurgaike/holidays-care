@@ -100,7 +100,7 @@ const Footer = () => {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <EmailIcon fontSize="small" />
                 <Typography variant="body2">
-                  holidayscare@gmail.com
+                  sales.holidaycare@gmail.com
                 </Typography>
               </Box>
 

@@ -149,7 +149,7 @@ const Navbar = () => {
                 src="/logo.png"
                 alt="Holidays Care"
                 sx={{
-                  height: { xs: 45, md: 100 }, // Much larger desktop
+                  height: { xs: 75, md: 100 }, // Much larger desktop
                   width: 'auto',
                   maxWidth: { xs: 140, md: 260 },
                   objectFit: 'contain',
