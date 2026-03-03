@@ -1,115 +1,175 @@
-import { Box, Container, Paper, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Paper,
+  Autocomplete,
+  InputAdornment
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function HeroSection({ heroImages }) {
+export default function HeroSection({ heroImages = [], tours = [] }) {
+
   const navigate = useNavigate();
+
   const [current, setCurrent] = useState(0);
   const [fade, setFade] = useState(true);
+  const [searchValue, setSearchValue] = useState(null);
 
   useEffect(() => {
+
     if (!heroImages.length) return;
 
     const interval = setInterval(() => {
+
       setFade(false);
+
       setTimeout(() => {
         setCurrent((prev) => (prev + 1) % heroImages.length);
         setFade(true);
       }, 400);
-    }, 4000);
+
+    }, 5000);
 
     return () => clearInterval(interval);
+
   }, [heroImages]);
 
   const imageUrl = heroImages[current]?.imageUrl
     ? `http://localhost:5000${heroImages[current].imageUrl}`
     : "/hero.png";
 
+  const handleSearch = () => {
+    if (!searchValue) return;
+    navigate(`/tour/${searchValue.id}`);
+  };
+
   return (
     <Box
       sx={{
-        height: "95vh",
         position: "relative",
+        height: { xs: "55vh", sm: "65vh", md: "95vh" },
+        overflow: "hidden",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         color: "white",
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${imageUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        opacity: fade ? 1 : 0,
-        transition: "opacity 0.4s ease-in-out",
       }}
     >
-      <Container maxWidth="md">
-        <Paper
-          elevation={0}
+
+      {/* HERO IMAGE */}
+      <Box
+        component="img"
+        src={imageUrl}
+        alt="Hero"
+        sx={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center",
+
+          animation: fade ? "kenburns 7s ease forwards" : "none",
+
+          "@keyframes kenburns": {
+            "0%": { transform: "scale(1)" },
+            "100%": { transform: "scale(1.12)" }
+          },
+
+          transition: "opacity 0.4s ease",
+          opacity: fade ? 1 : 0,
+        }}
+      />
+
+      {/* DARK OVERLAY */}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(0,0,0,0.35)",
+        }}
+      />
+
+      {/* HERO CONTENT */}
+      <Container
+        maxWidth="sm"
+        sx={{
+          position: "relative",
+          zIndex: 2,
+          textAlign: "center"
+        }}
+      >
+
+        <Typography
+          variant="h3"
+          fontWeight={800}
           sx={{
-            p: { xs: 3, md: 6 },
-            textAlign: "center",
-            background: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(5px)",
-            borderRadius: 6,
-            border: "1px solid rgba(255,255,255,0.3)",
+            mb: 3,
+            fontSize: { xs: "1.8rem", md: "3rem" },
+            textShadow: "2px 2px 10px rgba(0,0,0,0.4)"
           }}
         >
-          <Typography
-            variant="h2"
-            fontWeight={800}
-            sx={{
-              fontSize: { xs: "2.5rem", md: "3.75rem" },
-              textShadow: "2px 2px 8px rgba(0,0,0,0.3)",
-              mb: 2,
-            }}
-          >
-            {heroImages[current]?.title}
-          </Typography>
+          Find Your Next Destination
+        </Typography>
 
-          <Typography
-            variant="h6"
-            sx={{ mb: 4, opacity: 0.9, fontWeight: 300, letterSpacing: 1 }}
-          >
-            {heroImages[current]?.subtitle}
-          </Typography>
+        {/* SEARCH BAR */}
+        <Paper
+          sx={{
+            p: 1,
+            display: "flex",
+            alignItems: "center",
+            borderRadius: "50px",
+            overflow: "hidden"
+          }}
+        >
 
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate("/tours")}
-            sx={{
-              px: 6,
-              py: 1.8,
-              borderRadius: "50px",
-              fontSize: 18,
-              fontWeight: 600,
-              textTransform: "none",
-              bgcolor: "#fff",
-              color: "#1976d2",
-              "&:hover": { bgcolor: "#f0f0f0" },
-            }}
-          >
-            Start Your Journey
-          </Button>
-
-          {/* Dot indicators */}
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 3 }}>
-            {heroImages.map((_, i) => (
-              <Box
-                key={i}
-                onClick={() => setCurrent(i)}
-                sx={{
-                  width: i === current ? 24 : 8,
-                  height: 8,
-                  borderRadius: "10px",
-                  bgcolor: i === current ? "#fff" : "rgba(255,255,255,0.5)",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
+          <Autocomplete
+            freeSolo
+            options={tours}
+            getOptionLabel={(option) => option.name || ""}
+            onChange={(e, value) => setSearchValue(value)}
+            sx={{ flex: 1 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Search destinations..."
+                variant="standard"
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  )
                 }}
               />
-            ))}
-          </Box>
+            )}
+          />
+
+          <Button
+            onClick={handleSearch}
+            variant="contained"
+            sx={{
+              borderRadius: "40px",
+              px: 3,
+              py: 1,
+              textTransform: "none",
+              fontWeight: 600
+            }}
+          >
+            Search
+          </Button>
+
         </Paper>
+
       </Container>
+
     </Box>
   );
 }
