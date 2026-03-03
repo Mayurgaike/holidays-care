@@ -1,3 +1,4 @@
+
 import { Box, Container, Typography, Button, Chip } from "@mui/material";
 import { Star } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +35,7 @@ export default function PopularSection({ tours = [] }) {
         <Box
           sx={{
             display: "flex",
-            gap: 4,
+            gap: 7, // slightly more spacing
             flexWrap: "wrap",
             justifyContent: "center",
           }}
@@ -53,11 +54,12 @@ export default function PopularSection({ tours = [] }) {
                   sm: "48%",
                   md: "30%",
                 },
-                height: 420, // 🔥 fixed height
+                height: 460, // slightly bigger card
                 position: "relative",
                 borderRadius: 3,
                 overflow: "hidden",
                 cursor: "pointer",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
                 "&:hover img": { transform: "scale(1.1)" },
               }}
             >
@@ -100,10 +102,22 @@ export default function PopularSection({ tours = [] }) {
                   {tour.name}
                 </Typography>
 
+                {/* Starting price */}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    opacity: 0.85,
+                    mt: 2,
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  Starting from
+                </Typography>
+
                 <Typography
                   variant="h5"
                   fontWeight={800}
-                  sx={{ color: "#4fc3f7", my: 2 }}
+                  sx={{ color: "#4fc3f7", mb: 2 }}
                 >
                   ₹{tour.price.toLocaleString()}
                 </Typography>
