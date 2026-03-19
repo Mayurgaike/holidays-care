@@ -49,8 +49,8 @@ export default function TourCard({ tour, onClick }) {
         }}
       >
         <Box>
-          <Typography variant="h6" fontWeight={700}>
-            {tour?.title}
+          <Typography variant="h6" fontWeight={700} color="#111">
+            {tour?.title} 
           </Typography>
 
           <Typography
@@ -59,7 +59,7 @@ export default function TourCard({ tour, onClick }) {
             fontWeight={800}
             sx={{ mt: 1 }}
           >
-            ₹{tour?.price.toLocaleString()}
+           Starting at ₹{tour?.price.toLocaleString()}/-
           </Typography>
         </Box>
 

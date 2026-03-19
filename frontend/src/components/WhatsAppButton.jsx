@@ -20,14 +20,17 @@ const WhatsAppButton = () => {
           position: 'fixed',
           bottom: 20,
           right: 20,
+          height: 70,
+          width: 70,  
+          
           bgcolor: '#25D366',
           '&:hover': {
-            bgcolor: '#128C7E',
+            bgcolor: '#128b45',
           },
           zIndex: 1000,
         }}
       >
-        <WhatsAppIcon sx={{ fontSize: 30 }} />
+        <WhatsAppIcon sx={{ fontSize: 40 }} />
       </Fab>
     </Tooltip>
   );

@@ -11,7 +11,13 @@ export default function TourSection({
   tours
 }) {
   return (
-    <Box sx={{ py: 10, bgcolor: bg || "transparent" }}>
+   <Box
+  sx={{
+    py: 10,
+    background: bg || "transparent",
+    color: bg ? "#fff" : "inherit",
+  }}
+>
       <Container>
         <SectionHeader
           icon={icon}

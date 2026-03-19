@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ToursPage from './pages/ToursPage';
 import TourDetailPage from './pages/TourDetailPage';
+import Gallery from "./pages/Gallery";
 import ContactPage from './pages/ContactPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import AdminDashboard from './pages/AdminDashboard';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/tours" element={<ToursPage />} />
             <Route path="/tour/:id" element={<TourDetailPage />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminDashboard />} />

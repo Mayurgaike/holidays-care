@@ -3,24 +3,20 @@ import {
   Container,
   Typography,
   Button,
-  TextField,
-  Paper,
-  Autocomplete,
-  InputAdornment
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function HeroSection({ heroImages = [], tours = [] }) {
+export default function HeroSection({ heroImages = [] }) {
 
   const navigate = useNavigate();
 
   const [current, setCurrent] = useState(0);
   const [fade, setFade] = useState(true);
-  const [searchValue, setSearchValue] = useState(null);
+
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+  // hero image slider
   useEffect(() => {
 
     if (!heroImages.length) return;
@@ -44,16 +40,11 @@ export default function HeroSection({ heroImages = [], tours = [] }) {
     ? `${API_URL}${heroImages[current].imageUrl}`
     : "/hero.png";
 
-  const handleSearch = () => {
-    if (!searchValue) return;
-    navigate(`/tour/${searchValue.id}`);
-  };
-
   return (
     <Box
       sx={{
         position: "relative",
-        height: { xs: "55vh", sm: "65vh", md: "95vh" },
+        height: { xs: "45vh", sm: "60vh", md: "95vh" },
         overflow: "hidden",
         display: "flex",
         alignItems: "center",
@@ -98,7 +89,7 @@ export default function HeroSection({ heroImages = [], tours = [] }) {
 
       {/* HERO CONTENT */}
       <Container
-        maxWidth="sm"
+        maxWidth="md"
         sx={{
           position: "relative",
           zIndex: 2,
@@ -106,68 +97,64 @@ export default function HeroSection({ heroImages = [], tours = [] }) {
         }}
       >
 
+        {/* Tagline */}
         <Typography
-          variant="h3"
-          fontWeight={800}
           sx={{
-            mb: 3,
-            fontSize: { xs: "1.8rem", md: "3rem" },
-            textShadow: "2px 2px 10px rgba(0,0,0,0.4)"
+            letterSpacing: 2,
+            fontWeight: 600,
+            mb: 4,
+            color: "#ffffff",
+            textTransform: "uppercase",
+            fontSize: { xs: "1.1rem", md: "1.4rem" },
+            textShadow: "2px 2px 10px rgba(0,0,0,0.5)"
           }}
         >
-          Find Your Next Destination
+          Explore The World with Holidays Care
         </Typography>
 
-        {/* SEARCH BAR */}
-        <Paper
+        {/* Buttons */}
+        <Box
           sx={{
-            p: 1,
             display: "flex",
-            alignItems: "center",
-            borderRadius: "50px",
-            overflow: "hidden"
+            gap: 2,
+            justifyContent: "center",
+            flexWrap: "wrap"
           }}
         >
 
-          <Autocomplete
-            freeSolo
-            options={tours}
-            getOptionLabel={(option) => option.name || ""}
-            onChange={(e, value) => setSearchValue(value)}
-            sx={{ flex: 1 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                placeholder="Search destinations..."
-                variant="standard"
-                InputProps={{
-                  ...params.InputProps,
-                  disableUnderline: true,
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            )}
-          />
-
           <Button
-            onClick={handleSearch}
             variant="contained"
+            size="large"
             sx={{
-              borderRadius: "40px",
-              px: 3,
-              py: 1,
-              textTransform: "none",
-              fontWeight: 600
+              bgcolor: "#3f84eb",
+              px: 4,
+              fontWeight: 600,
+              "&:hover": { bgcolor: "#3b76ce" }
             }}
+            onClick={() => navigate("/tours")}
           >
-            Search
+            Explore Tours
           </Button>
 
-        </Paper>
+          <Button
+            variant="outlined"
+            size="large"
+            sx={{
+              borderColor: "white",
+              color: "white",
+              px: 4,
+              fontWeight: 600,
+              "&:hover": {
+                borderColor: "#fff",
+                bgcolor: "rgba(255,255,255,0.15)"
+              }
+            }}
+            onClick={() => navigate("/contact")}
+          >
+            Plan Trip
+          </Button>
+
+        </Box>
 
       </Container>
 
