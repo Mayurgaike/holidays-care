@@ -10,26 +10,21 @@ import {
   ListItemText,
   Box,
   Container,
+  Divider,
   useMediaQuery,
   useTheme,
-  Divider,
 } from "@mui/material";
-
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const navigate = useNavigate();
   const location = useLocation();
-
   const { isAuthenticated, logout } = useAuth();
 
   const menuItems = [
@@ -40,13 +35,11 @@ const Navbar = () => {
     { text: "Contact", path: "/contact" },
   ];
 
-  if (isAuthenticated) {
-    menuItems.push({ text: "Admin", path: "/admin" });
-  }
+  if (isAuthenticated) menuItems.push({ text: "Admin", path: "/admin" });
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const isActive = (path) => location.pathname === path;
+
+  const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
 
   const handleLogout = () => {
     logout();
@@ -54,10 +47,8 @@ const Navbar = () => {
     setMobileOpen(false);
   };
 
-  const isActive = (path) => location.pathname === path;
-
   const drawer = (
-    <Box sx={{ width: 270 }}>
+    <Box sx={{ width: 260 }}>
       <Box
         sx={{
           display: "flex",
@@ -66,18 +57,15 @@ const Navbar = () => {
           p: 2,
         }}
       >
-        <Box
-          component="img"
+        <img
           src="/logo 1.png"
           alt="logo"
-          sx={{
-            height: 50,
+          style={{
+            height: "clamp(70px, 7.5vw, 95px)",
             width: "auto",
-            maxWidth: 160,
             objectFit: "contain",
           }}
         />
-
         <IconButton onClick={handleDrawerToggle}>
           <CloseIcon />
         </IconButton>
@@ -93,7 +81,6 @@ const Navbar = () => {
             to={item.path}
             onClick={handleDrawerToggle}
             sx={{
-              py: 1.5,
               color: isActive(item.path) ? "#1976d2" : "#333",
               fontWeight: isActive(item.path) ? 600 : 500,
             }}
@@ -119,116 +106,69 @@ const Navbar = () => {
       <AppBar
         position="sticky"
         elevation={1}
-        sx={{
-          bgcolor: "white",
-          color: "#333",
-        }}
+        sx={{ bgcolor: "white", color: "#333" }}
       >
-        <Container maxWidth={false} disableGutters>
+        <Container maxWidth="xl">
           <Toolbar
+            disableGutters
             sx={{
-              minHeight: { xs: 75, md: 100},
-              height: { xs: 75, md: 100 },
-              display: "flex",
+              minHeight: { xs: 70, md: 100 },
               justifyContent: "space-between",
               alignItems: "center",
-               px: { xs: 2, md: 16 },
+              px: { xs: 1, md: 4 },
             }}
           >
-         {/* Logo Section */}
-<Box
-  component={Link}
-  to="/"
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    textDecoration: "none",
-    flexShrink: 0,
-  }}
->
-  {/* Icon Logo */}
-  <div
-    style={{
-      width: "70px",
-      height: "75px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    <img
-      src="/logo 1.png"
-      alt="logo icon"
-      style={{
-        width: "140px",
-        height: "140px",
-        objectFit: "contain",
-      }}
-    />
-  </div>
+            {/* Logo */}
+            <Box
+              component={Link}
+              to="/"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+              }}
+            >
+              <img
+                src="/logo-horizontal.png"
+                alt="Holidays Care"
+                style={{
+                  height: "clamp(70px, 7.5vw, 95px)",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            </Box>
 
-  {/* Text Logo */}
-  <div
-    style={{
-      width: "260px",
-      height: "70px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      marginLeft: "-40px",
-    }}
-  >
-    <img
-      src="/logo 2.png"
-      alt="Holidays Care"
-      style={{
-        width: "380px",
-        height: "380px",
-        objectFit: "contain",
-      }}
-    />
-  </div>
-</Box>
-
-            {/* MENU */}
+            {/* Desktop Menu */}
             {isMobile ? (
               <IconButton onClick={handleDrawerToggle}>
-                <MenuIcon sx={{ fontSize: 30 }} />
+                <MenuIcon sx={{ fontSize: 28 }} />
               </IconButton>
             ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: 3,
-                  alignItems: "center",
-                }}
-              >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {menuItems.map((item) => (
                   <Button
                     key={item.text}
                     component={Link}
                     to={item.path}
                     sx={{
-                      fontSize: "15px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       color: isActive(item.path) ? "#1976d2" : "#333",
                       position: "relative",
-
                       "&:hover": {
                         color: "#1976d2",
                         backgroundColor: "transparent",
                       },
-
                       "&::after": isActive(item.path)
                         ? {
                             content: '""',
                             position: "absolute",
-                            bottom: -5,
+                            bottom: -4,
                             left: 0,
                             width: "100%",
                             height: "3px",
-                            backgroundColor: "#1976d2",
+                            bgcolor: "#1976d2",
                             borderRadius: 2,
                           }
                         : {},
@@ -243,15 +183,12 @@ const Navbar = () => {
                     variant="contained"
                     onClick={handleLogout}
                     sx={{
-                      ml: 2,
+                      ml: 1,
                       bgcolor: "#1976d2",
                       borderRadius: 2,
                       px: 3,
                       fontWeight: 600,
-
-                      "&:hover": {
-                        bgcolor: "#1565c0",
-                      },
+                      "&:hover": { bgcolor: "#1565c0" },
                     }}
                   >
                     Logout

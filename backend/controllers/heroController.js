@@ -1,8 +1,38 @@
 const HeroImage = require("../models/HeroImage");
+const fs = require("fs");
+const path = require("path");
+
+const parseBoolean = (val) => {
+  if (val === undefined || val === null) return undefined;
+
+  if (typeof val === "boolean") return val;
+
+  if (typeof val === "string") {
+    if (val === "true") return true;
+    if (val === "false") return false;
+    if (val === "undefined" || val === "") return undefined;
+  }
+
+  return undefined;
+};
+
+const parseJSONField = (val) => {
+  if (!val) return [];
+
+  if (Array.isArray(val)) return val;
+
+  try {
+    return JSON.parse(val);
+  } catch {
+    return [];
+  }
+};
 
 exports.getHeroImages = async (req, res) => {
   try {
-    const heroImages = await HeroImage.find({ isActive: true }).sort({ order: 1 });
+    const heroImages = await HeroImage.find({ isActive: true }).sort({
+      order: 1,
+    });
     res.json(heroImages);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -21,7 +51,7 @@ exports.createHeroImage = async (req, res) => {
       title,
       subtitle,
       imageUrl: `/uploads/hero/${req.file.filename}`,
-      order: order || 0
+      order: order || 0,
     });
 
     await heroImage.save();
@@ -33,9 +63,15 @@ exports.createHeroImage = async (req, res) => {
 
 exports.updateHeroImage = async (req, res) => {
   try {
-    const { title, subtitle, order, isActive } = req.body;
+    const updateData = {
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+    };
 
-    const updateData = { title, subtitle, order, isActive };
+    if (req.body.order) updateData.order = Number(req.body.order);
+
+    const isActive = parseBoolean(req.body.isActive);
+    if (isActive !== undefined) updateData.isActive = isActive;
 
     if (req.file) {
       updateData.imageUrl = `/uploads/hero/${req.file.filename}`;
@@ -44,7 +80,7 @@ exports.updateHeroImage = async (req, res) => {
     const heroImage = await HeroImage.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true }
+      { new: true },
     );
 
     if (!heroImage) {
@@ -53,17 +89,27 @@ exports.updateHeroImage = async (req, res) => {
 
     res.json(heroImage);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 exports.deleteHeroImage = async (req, res) => {
   try {
-    const heroImage = await HeroImage.findByIdAndDelete(req.params.id);
+    const hero = await HeroImage.findById(req.params.id);
 
-    if (!heroImage) {
+    if (!hero) {
       return res.status(404).json({ message: "Hero image not found" });
     }
+
+    if (hero.imageUrl) {
+      const filePath = path.join(__dirname, "..", hero.imageUrl);
+
+      fs.unlink(filePath, (err) => {
+        if (err) console.log("File delete error:", err.message);
+      });
+    }
+
+    await HeroImage.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Hero image deleted successfully" });
   } catch (error) {
