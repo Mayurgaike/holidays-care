@@ -2,7 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { Explore, Public } from "@mui/icons-material";
 import { toursAPI, heroAPI } from "@/services/api";
 
-import { Box } from "@mui/material";
+import SEO from "@/components/SEO";
 
 const HeroSection = lazy(() => import("@/components/home/HeroSection"));
 const TourSection = lazy(() => import("@/components/home/TourSection"));
@@ -11,7 +11,6 @@ const PopularSection = lazy(() => import("@/components/home/PopularSection"));
 const ContactSection = lazy(() => import("@/components/home/ContactSection"));
 
 export default function HomePage() {
-
   const [heroImages, setHeroImages] = useState([]);
   const [popularTours, setPopularTours] = useState([]);
   const [domesticTours, setDomesticTours] = useState([]);
@@ -32,33 +31,40 @@ export default function HomePage() {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-     
-      <HeroSection heroImages={heroImages} />
-
-      <PopularSection tours={popularTours} />
-
-      <TourSection
-        icon={<Explore />}
-        label="Incredible India"
-        title="Domestic Escapes"
-        subtitle="From snowy peaks to serene backwaters."
-        tours={domesticTours}
-        category="domestic"
+    <>
+      <SEO
+        title="Holidays Care | Best Travel Agency in Nashik"
+        description="Explore domestic and international tour packages with Holidays Care. Affordable, customized, and unforgettable travel experiences."
+        keywords="travel agency Nashik, tour packages India, international tours, holidays care"
+        image="/hero.png"
+        url="https://yourdomain.com/"
       />
+      <Suspense fallback={<div>Loading...</div>}>
+        <HeroSection heroImages={heroImages} />
 
-      <TourSection
-        bg= "linear-gradient(135deg, #1b4557, #275f72, #2b5e74)"
-        icon={<Public />}
-        label="Global Wonders"
-        title="International Wonders"
-        subtitle="Curated global experiences."
-        tours={internationalTours}
-        category="international"
-      />
-     
-      <ContactSection />
+        <PopularSection tours={popularTours} />
 
-    </Suspense>
+        <TourSection
+          icon={<Explore />}
+          label="Incredible India"
+          title="Domestic Escapes"
+          subtitle="From snowy peaks to serene backwaters."
+          tours={domesticTours}
+          category="domestic"
+        />
+
+        <TourSection
+          bg="linear-gradient(135deg, #1b4557, #275f72, #2b5e74)"
+          icon={<Public />}
+          label="Global Wonders"
+          title="International Wonders"
+          subtitle="Curated global experiences."
+          tours={internationalTours}
+          category="international"
+        />
+
+        <ContactSection />
+      </Suspense>
+    </>
   );
 }

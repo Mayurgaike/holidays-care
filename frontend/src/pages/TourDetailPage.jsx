@@ -10,7 +10,7 @@ import {
   Grid,
   Button,
   Divider,
-  Card
+  Card,
 } from "@mui/material";
 
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -20,12 +20,11 @@ const fadeUp = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
 };
 
 const TourDetailPage = () => {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -78,7 +77,13 @@ const TourDetailPage = () => {
 
   return (
     <Box>
-
+      <SEO
+        title={`${tour.title} | Book Tour Package`}
+        description={tour.description?.slice(0, 150)}
+        keywords={`${tour.destination}, tour package, holidays care`}
+        image={`${API_URL}${tour.images?.[0]}`}
+        url={`https://yourdomain.com/tour/${tour._id}`}
+      />
       {/* HERO */}
       <Box
         component={motion.div}
@@ -91,7 +96,7 @@ const TourDetailPage = () => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           display: "flex",
-          alignItems: "flex-end"
+          alignItems: "flex-end",
         }}
       >
         <Container sx={{ pb: 5 }}>
@@ -100,7 +105,7 @@ const TourDetailPage = () => {
             sx={{
               color: "white",
               fontWeight: 800,
-              fontSize: { xs: "1.8rem", md: "3rem" }
+              fontSize: { xs: "1.8rem", md: "3rem" },
             }}
           >
             {tour.title}
@@ -117,25 +122,35 @@ const TourDetailPage = () => {
       {/* MAIN */}
       <Container sx={{ py: { xs: 5, md: 8 } }}>
         <Grid container spacing={5}>
-
           {/* LEFT */}
           <Grid item xs={12} md={8}>
-
-            <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+            >
               {tour.description && (
                 <Box sx={{ mb: 6 }}>
                   <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
                     Overview
                   </Typography>
 
-                  <Typography sx={{ fontSize: "1.1rem", lineHeight: 1.9, color: "#444" }}>
+                  <Typography
+                    sx={{ fontSize: "1.1rem", lineHeight: 1.9, color: "#444" }}
+                  >
                     {tour.description}
                   </Typography>
                 </Box>
               )}
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+            >
               {(tour.highlights || []).length > 0 && (
                 <Box sx={{ mb: 6 }}>
                   <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
@@ -144,7 +159,9 @@ const TourDetailPage = () => {
 
                   {tour.highlights.map((item, index) => (
                     <Box key={index} sx={{ display: "flex", mb: 1.5 }}>
-                      <CheckCircleOutlineIcon sx={{ color: "#1976d2", mr: 1.5 }} />
+                      <CheckCircleOutlineIcon
+                        sx={{ color: "#1976d2", mr: 1.5 }}
+                      />
                       <Typography>{item}</Typography>
                     </Box>
                   ))}
@@ -152,7 +169,12 @@ const TourDetailPage = () => {
               )}
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}>
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+            >
               {(tour.itinerary || []).length > 0 && (
                 <Box sx={{ mb: 6 }}>
                   <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
@@ -175,7 +197,6 @@ const TourDetailPage = () => {
                 </Box>
               )}
             </motion.div>
-
           </Grid>
 
           {/* RIGHT */}
@@ -187,12 +208,15 @@ const TourDetailPage = () => {
                   borderRadius: 3,
                   position: "sticky",
                   top: 100,
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
                 }}
               >
                 <Typography sx={{ mb: 1 }}>Starting at</Typography>
 
-                <Typography variant="h4" sx={{ fontWeight: 800, color: "#1976d2", mb: 2 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 800, color: "#1976d2", mb: 2 }}
+                >
                   ₹{tour?.price?.toLocaleString()}/-
                 </Typography>
 
@@ -207,7 +231,7 @@ const TourDetailPage = () => {
                     borderRadius: 2,
                     fontWeight: 700,
                     background: "#25d366",
-                    "&:hover": { background: "#1ebe5d" }
+                    "&:hover": { background: "#1ebe5d" },
                   }}
                 >
                   Book on WhatsApp
@@ -215,10 +239,8 @@ const TourDetailPage = () => {
               </Card>
             </motion.div>
           </Grid>
-
         </Grid>
       </Container>
-
     </Box>
   );
 };
