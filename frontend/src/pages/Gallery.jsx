@@ -6,7 +6,7 @@ import {
   Card,
   CardMedia,
 } from "@mui/material";
-
+import SEO from "@/components/SEO";
 import { useEffect, useRef } from "react";
 
 export default function GalleryPage() {

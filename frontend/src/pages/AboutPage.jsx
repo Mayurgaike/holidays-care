@@ -16,8 +16,7 @@ import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import CountUp from "react-countup";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import ParkIcon from "@mui/icons-material/Park";
-import ApartmentIcon from "@mui/icons-material/Apartment";
+import SEO from "@/components/SEO";
 
 import PublicIcon from "@mui/icons-material/Public";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";

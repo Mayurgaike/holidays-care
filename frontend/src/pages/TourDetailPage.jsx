@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toursAPI } from "../services/api";
 import { motion } from "framer-motion";
-
+import SEO from "@/components/SEO";
 import {
   Box,
   Container,

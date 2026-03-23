@@ -14,6 +14,7 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import SEO from "@/components/SEO";
 
 const ContactPage = () => {
   const [form, setForm] = useState({

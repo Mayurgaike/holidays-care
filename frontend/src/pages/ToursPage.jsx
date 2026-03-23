@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { toursAPI } from "@/services/api";
+import SEO from "@/components/SEO";
 
 const ToursPage = () => {
   const [type, setType] = useState("international");
