@@ -7,9 +7,21 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://192.168.1.4:5173",
+  "https://holidays-care.com",
+];
+
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://192.168.1.4:5173"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
