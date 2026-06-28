@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Box,
   Container,
@@ -23,6 +25,32 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Rating from "@mui/material/Rating";
+
+/**
+ * Fallback reviews — shown when the Google Places API call fails or returns
+ * no reviews. These are the original hardcoded placeholder reviews so the
+ * section is never empty.
+ */
+const FALLBACK_REVIEWS = [
+  {
+    author_name: "Rohan Mehta",
+    rating: 5,
+    text: "Professional, responsive, and extremely well-organized. Our family vacation was stress-free and beautiful.",
+    relative_time_description: "Business Owner",
+  },
+  {
+    author_name: "Priya Sharma",
+    rating: 5,
+    text: "Everything was perfectly arranged — hotels, flights and local support. Highly recommended!",
+    relative_time_description: "Entrepreneur",
+  },
+  {
+    author_name: "Amit Kulkarni",
+    rating: 5,
+    text: "Best travel planning experience. Transparent pricing and amazing service quality.",
+    relative_time_description: "Corporate Manager",
+  },
+];
 
 const stats = [
   {
@@ -81,6 +109,38 @@ const team = [
 
 const AboutPage = () => {
   const navigate = useNavigate();
+
+  /**
+   * Google Places API Integration — Reviews
+   * ─────────────────────────────────────────
+   * Fetches real Google reviews from our backend endpoint /api/reviews,
+   * which proxies the Google Places Details API to keep the API key secure.
+   *
+   * If the fetch fails or returns no data, the component silently falls back
+   * to FALLBACK_REVIEWS so the section is never empty.
+   */
+  const [reviews, setReviews] = useState(FALLBACK_REVIEWS);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        const { data } = await axios.get(`${API_URL}/reviews`);
+        if (data.success && data.reviews && data.reviews.length > 0) {
+          // Filter out reviews with no text (some Google reviewers only leave a star rating)
+          const withText = data.reviews.filter((r) => r.text && r.text.trim().length > 0);
+          if (withText.length > 0) {
+            setReviews(withText);
+          }
+        }
+        // If API returned no reviews, FALLBACK_REVIEWS remain in state
+      } catch (err) {
+        // Silently fall back to hardcoded reviews
+        console.warn("Could not fetch Google reviews, using fallback:", err.message);
+      }
+    };
+    fetchReviews();
+  }, []);
 
   return (
     <>
@@ -311,79 +371,30 @@ const AboutPage = () => {
               loop
               slidesPerView={1}
             >
-              <SwiperSlide>
-                <Box
-                  sx={{
-                    maxWidth: 750,
-                    mx: "auto",
-                    p: 5,
-                    borderRadius: 4,
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(8px)",
-                  }}
-                >
-                  <Rating value={5} readOnly sx={{ mb: 2, color: "#FFD700" }} />
+              {reviews.map((review, index) => (
+                <SwiperSlide key={index}>
+                  <Box
+                    sx={{
+                      maxWidth: 750,
+                      mx: "auto",
+                      p: 5,
+                      borderRadius: 4,
+                      background: "rgba(0,0,0,0.45)",
+                      backdropFilter: "blur(8px)",
+                    }}
+                  >
+                    <Rating value={review.rating} readOnly sx={{ mb: 2, color: "#FFD700" }} />
 
-                  <Typography sx={{ fontStyle: "italic", mb: 3 }}>
-                    "Professional, responsive, and extremely well-organized. Our
-                    family vacation was stress-free and beautiful."
-                  </Typography>
+                    <Typography sx={{ fontStyle: "italic", mb: 3 }}>
+                      "{review.text}"
+                    </Typography>
 
-                  <Typography sx={{ fontWeight: 600 }}>Rohan Mehta</Typography>
+                    <Typography sx={{ fontWeight: 600 }}>{review.author_name}</Typography>
 
-                  <Typography variant="body2">Business Owner</Typography>
-                </Box>
-              </SwiperSlide>
-
-              <SwiperSlide>
-                <Box
-                  sx={{
-                    maxWidth: 750,
-                    mx: "auto",
-                    p: 5,
-                    borderRadius: 4,
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(8px)",
-                  }}
-                >
-                  <Rating value={5} readOnly sx={{ mb: 2, color: "#FFD700" }} />
-
-                  <Typography sx={{ fontStyle: "italic", mb: 3 }}>
-                    "Everything was perfectly arranged — hotels, flights and
-                    local support. Highly recommended!"
-                  </Typography>
-
-                  <Typography sx={{ fontWeight: 600 }}>Priya Sharma</Typography>
-
-                  <Typography variant="body2">Entrepreneur</Typography>
-                </Box>
-              </SwiperSlide>
-
-              <SwiperSlide>
-                <Box
-                  sx={{
-                    maxWidth: 750,
-                    mx: "auto",
-                    p: 5,
-                    borderRadius: 4,
-                    background: "rgba(0,0,0,0.45)",
-                    backdropFilter: "blur(8px)",
-                  }}
-                >
-                  <Rating value={5} readOnly sx={{ mb: 2, color: "#FFD700" }} />
-
-                  <Typography sx={{ fontStyle: "italic", mb: 3 }}>
-                    "Best travel planning experience. Transparent pricing and
-                    amazing service quality."
-                  </Typography>
-
-                  <Typography sx={{ fontWeight: 600 }}>
-                    Amit Kulkarni
-                  </Typography>
-
-                  <Typography variant="body2">Corporate Manager</Typography>
-                </Box>
-              </SwiperSlide>
+                    <Typography variant="body2">{review.relative_time_description}</Typography>
+                  </Box>
+                </SwiperSlide>
+              ))}
             </Swiper>
           </Container>
         </Box>
