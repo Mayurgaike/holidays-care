@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
   Box,
@@ -109,6 +109,7 @@ const team = [
 
 const AboutPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   /**
    * Google Places API Integration — Reviews
@@ -140,7 +141,7 @@ const AboutPage = () => {
       }
     };
     fetchReviews();
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>
